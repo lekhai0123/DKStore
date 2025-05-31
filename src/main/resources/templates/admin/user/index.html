@@ -40,13 +40,8 @@
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					Blank page <small>it all starts here</small>
+					Quản lý người dùng
 				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li><a href="#">Examples</a></li>
-					<li class="active">Blank page</li>
-				</ol>
 			</section>
 
 			<!-- Main content -->
@@ -56,7 +51,7 @@
 						<div class="col-md-12">
 							<div class="box">
 								<div class="box-header">
-									<h3 class="box-title">Bordered Table</h3>
+									<h3 class="box-title">Bảng người dùng</h3>
 									<div class="box-tools">
 										<form>
 											<div class="input-group input-group-sm hidden-xs"
@@ -76,7 +71,7 @@
 								<!-- /.box-header -->
 								<div class="box-body">
 								<span> <a class="btn btn-success"
-										th:href="@{/admin/add-user}">Add new brand</a>
+										th:href="@{/admin/add-user}">Thêm người dùng</a>
 									</span>
 									<div class="table-responsive">
 										<table class="table table-bordered">
@@ -106,10 +101,10 @@
 													<td th:text="${userLists.telephone}"></td>
 
 													<td><a class="btn btn-warning"
-														th:href="@{/admin/edit-user/{username}(username=${userLists.userName})}">Edit</a>
+														th:href="@{/admin/edit-user/{username}(username=${userLists.userName})}">Sửa</a>
 														<a class="btn btn-danger"
 														th:href="@{/admin/delete-user/{username}(username=${userLists.userName})}"
-														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Delete</a>
+														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Xoá</a>
 														<a
 														th:href="@{/admin/author-user/{id}(id=${userLists.id})}"><i
 															class="fa-solid fa-user-gear"></i> Phân quyền</a></td>

@@ -36,13 +36,8 @@
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					Blank page <small>it all starts here</small>
+					Quản lý giỏ hàng
 				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li><a href="#">Examples</a></li>
-					<li class="active">Blank page</li>
-				</ol>
 			</section>
 
 			<!-- Main content -->
@@ -52,7 +47,7 @@
 						<div class="col-md-12">
 							<div class="box">
 								<div class="box-header">
-									<h3 class="box-title">Bordered Table</h3>
+									<h3 class="box-title">Bảng giỏ hàng</h3>
 									<div class="box-tools">
 										<form>
 											<div class="input-group input-group-sm hidden-xs"
@@ -72,7 +67,7 @@
 								<!-- /.box-header -->
 								<div class="box-body ">
 									<span> <a class="btn btn-success"
-										th:href="@{/admin/add-giohang}">Add new category</a>
+										th:href="@{/admin/add-giohang}">Thêm giỏ hàng</a>
 									</span>
 									<div class="table-responsive">
 										<table class="table table-bordered">
@@ -104,11 +99,11 @@
 
 													<td><a class="btn btn-info"
 														th:href="@{/admin/detail-giohang/{id}(id=${giohang.id})}">
-															Detail </a> <a class="btn btn-warning"
-														th:href="@{/admin/edit-giohang/{id}(id=${giohang.id})}">Edit</a>
+															Chi tiết </a> <a class="btn btn-warning"
+														th:href="@{/admin/edit-giohang/{id}(id=${giohang.id})}">Sửa</a>
 														<a class="btn btn-danger"
 														th:href="@{/admin/delete-giohang/{id}(id=${giohang.id})}"
-														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Delete</a>
+														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Xoá</a>
 														<a class="btn glyphicon glyphicon-check"
 														th:href="@{/admin/confirm-thanhtoan/{id}(id=${giohang.id})}">Checkout</a></td>
 												</tr>

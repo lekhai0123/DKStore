@@ -16,9 +16,6 @@
 <meta name="author" content="Themefisher">
 <meta name="generator" content="Themefisher Constra HTML Template v1.0">
 
-<!-- Favicon -->
-<link rel="shortcut icon" type="image/x-icon"
-	th:href="@{/fe/images/favicon.png}" />
 
 <!-- Themefisher Icon font -->
 <link rel="stylesheet"
@@ -56,10 +53,10 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="content">
-						<h1 class="page-name">Cart</h1>
+						<h1 class="page-name">Giỏ hàng</h1>
 						<ol class="breadcrumb">
 							<li><a href="index.html">Home</a></li>
-							<li class="active">cart</li>
+							<li class="active">Giỏ hàng</li>
 						</ol>
 					</div>
 				</div>
@@ -80,58 +77,62 @@
 									<table class="table">
 										<thead>
 											<tr>
-												<th class="">Item</th>
-												<th class="">Size</th>
-												<th class="">Price</th>
-												<th class="">Quantity</th>
-												<th class="">Total</th>
-												<th class="">Actions</th>
+												<th class="">Sản phẩm</th>
+												<th class="">Kích cỡ</th>
+												<th class="">Giá</th>
+												<th class="">Số lượng</th>
+												<th class="">Tổng cộng</th>
+												<th class="">Hành động</th>
 											</tr>
 										</thead>
-										<tbody th:each="item : ${chiTietGioHang}">
+										<tbody th:each="item : ${chitietList}">
 											<tr class="">
 												<td class="">
 													<div class="product-info">
-														<img width="80" th:src="@{${item.product.mainImage}}"
-															alt="" /> <a href="#!" th:text="${item.product.name}"></a>
+														<img width="80" th:src="@{${item.chitietgiohang.product.mainImage}}"
+															alt="" /> <a href="#!" th:text="${item.chitietgiohang.product.name}"></a>
 													</div>
 												</td>
-												<td class="" th:text="${item.size}"></td>
+												<td class="" th:text="${item.chitietgiohang.size}"></td>
 												<td class="" th:text="${item.gia}"></td>
 												<td class="quantity-cell">
 													<form method="post" action="/user/giohang">
 														<input type="hidden" name="chitietId"
-															th:value="${item.id}">
+															th:value="${item.chitietgiohang.id}">
 															<input type="hidden" name="productId"
-															th:value="${item.product.id}">
+															th:value="${item.chitietgiohang.product.id}">
 															<input type="hidden" name="size"
-															th:value="${item.size}">
+															th:value="${item.chitietgiohang.size}">
+															<input type="hidden" name="giohangId"
+															th:value="${giohangId}">
+															<input type="hidden" name="gia"
+															th:value="${item.gia}">
 														<!-- Nút giảm số lượng -->
 														<button type="submit" name="newSoluong"
-															th:value="${item.soLuong - 1}"
+															th:value="${item.chitietgiohang.soLuong - 1}"
 															class="quantity-minus btn btn-sm btn-danger"
-															th:disabled="${item.soLuong == 1}">-</button>
+															th:disabled="${item.chitietgiohang.soLuong == 1}">-</button>
 
 														<!-- Hiển thị số lượng hiện tại -->
-														<span class="quantity-value" th:text="${item.soLuong}"></span>
+														<span class="quantity-value" th:text="${item.chitietgiohang.soLuong}"></span>
 
 														<!-- Nút tăng số lượng -->
 														<button type="submit" name="newSoluong"
-															th:value="${item.soLuong + 1}"
+															th:value="${item.chitietgiohang.soLuong + 1}"
 															class="quantity-plus btn btn-sm btn-success">+</button>
 													</form>
 												</td>
 
 												<td class="" th:text="${item.tonggiasanpham}"></td>
 												<td class=""><a class="product-remove"
-													th:href="@{/user/delete-chitietgiohang/{id}(id=${item.id})}"
-													onclick="return confirm('Bạn có chắc muốn xoá sản phẩm này khỏi giỏ hàng?')">Remove</a>
+													th:href="@{/user/delete-chitietgiohang/{id}(id=${item.chitietgiohang.id})}"
+													onclick="return confirm('Bạn có chắc muốn xoá sản phẩm này khỏi giỏ hàng?')">Xóa</a>
 												</td>
 											</tr>
 										</tbody>
 									</table>
 									<a th:href="@{/user/checkout/{id}(id=${giohangId})}"
-										class="btn btn-main pull-right">Checkout</a>
+										class="btn btn-main pull-right">Thanh toán</a>
 								</form>
 							</div>
 						</div>
@@ -177,7 +178,6 @@
 	<script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll("strong").forEach(element => {
-            console.log("Checking element:", element.innerHTML);
             const value = parseFloat(element.innerHTML.trim());
             if (!isNaN(value)) {
                 if (Number.isInteger(value)) {

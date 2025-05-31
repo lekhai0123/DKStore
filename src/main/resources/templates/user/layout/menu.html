@@ -19,119 +19,28 @@
 					<ul class="nav navbar-nav">
 
 						<!-- Home -->
-						<li class="dropdown "
-							th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"><a
-							th:href="@{index.html}">Home</a></li>
+						<li class="dropdown "><a
+							th:href="@{'/'}">Home</a></li>
 						<!-- / Home -->
-
-
 						<!-- Elements -->
-						<li class="dropdown dropdown-slide"><a th:href="@{#!}"
-							class="dropdown-toggle" data-toggle="dropdown"
-							data-hover="dropdown" data-delay="350" role="button"
-							aria-haspopup="true" aria-expanded="false">Shop <span
-								class="tf-ion-ios-arrow-down"></span></a>
-							<div class="dropdown-menu">
-								<div class="row">
-
-									<!-- Basic -->
-									<div class="col-lg-6 col-md-6 mb-sm-3">
-										<ul>
-											<li class="dropdown-header">Pages</li>
-											<li role="separator" class="divider"></li>
-											<li><a th:href="@{shop.html}">Shop</a></li>
-											<li><a th:href="@{checkout.html}">Checkout</a></li>
-											<li><a th:href="@{cart.html}">Cart</a></li>
-											<li><a th:href="@{pricing.html}">Pricing</a></li>
-											<li><a th:href="@{confirmation.html}">Confirmation</a></li>
-
-										</ul>
-									</div>
-
-									<!-- Layout -->
-									<div class="col-lg-6 col-md-6 mb-sm-3">
-										<ul>
-											<li class="dropdown-header">Layout</li>
-											<li role="separator" class="divider"></li>
-											<li><a th:href="@{product-single.html}">Product
-													Details</a></li>
-											<li><a th:href="@{/shop}">Shop With Sidebar</a></li>
-
-										</ul>
-									</div>
-
-								</div>
-								<!-- / .row -->
-							</div> <!-- / .dropdown-menu --></li>
+						<li class="dropdown "><a
+							th:href="@{'/shop'}">Shop</a></li>
 						<!-- / Elements -->
 
 
 						<!-- Pages -->
-						<li class="dropdown full-width dropdown-slide"><a
-							th:href="@{#!}" class="dropdown-toggle" data-toggle="dropdown"
-							data-hover="dropdown" data-delay="350" role="button"
-							aria-haspopup="true" aria-expanded="false">Pages <span
-								class="tf-ion-ios-arrow-down"></span></a>
-							<div class="dropdown-menu">
-								<div class="row">
-
-									
-
-									<!-- Contact -->
-									<div class="col-sm-3 col-xs-12">
-										<ul>
-											<li class="dropdown-header">Dashboard</li>
-											<li role="separator" class="divider"></li>
-											<li><a th:href="@{dashboard.html}">User Interface</a></li>
-											<li><a th:href="@{/user/hoadon}">Orders</a></li>
-											<li><a th:href="@{address.html}">Address</a></li>
-											<li><a th:href="@{profile-details.html}">Profile
-													Details</a></li>
-										</ul>
-									</div>
-
-									<!-- Mega Menu -->
-									<div class="col-sm-3 col-xs-12">
-										<a th:href="@{shop.html}"> <img class="img-responsive"
-											th:src="@{/fe/images/shop/header-img.jpg}" alt="menu image" />
-										</a>
-									</div>
-								</div>
-								<!-- / .row -->
-							</div> <!-- / .dropdown-menu --></li>
+						<li class="dropdown "><a
+							th:href="@{'/user/giohang'}">Giỏ hàng</a></li>
 						<!-- / Pages -->
 
+						<li class="dropdown "><a
+							th:href="@{'/user/hoadon'}">Hoá đơn</a></li>
+						<li class="dropdown "><a
+							th:href="@{'/contact'}">Liên hệ</a></li>
 
-
-						<!-- Blog -->
-						<li class="dropdown dropdown-slide"><a th:href="@{#!}"
-							class="dropdown-toggle" data-toggle="dropdown"
-							data-hover="dropdown" data-delay="350" role="button"
-							aria-haspopup="true" aria-expanded="false">Blog <span
-								class="tf-ion-ios-arrow-down"></span></a>
-							<ul class="dropdown-menu">
-								<li><a th:href="@{blog-left-sidebar.html}">Blog Left
-										Sidebar</a></li>
-								<li><a th:href="@{blog-right-sidebar.html}">Blog Right
-										Sidebar</a></li>
-								<li><a th:href="@{blog-full-width.html}">Blog Full
-										Width</a></li>
-								<li><a th:href="@{blog-grid.html}">Blog 2 Columns</a></li>
-								<li><a th:href="@{blog-single.html}">Blog Single</a></li>
-							</ul></li>
-						<!-- / Blog -->
-
-						<!-- Shop -->
-						<li class="dropdown dropdown-slide"><a th:href="@{#!}"
-							class="dropdown-toggle" data-toggle="dropdown"
-							data-hover="dropdown" data-delay="350" role="button"
-							aria-haspopup="true" aria-expanded="false">Elements <span
-								class="tf-ion-ios-arrow-down"></span></a>
-							<ul class="dropdown-menu">
-								<li><a th:href="@{typography.html}">Typography</a></li>
-								<li><a th:href="@{buttons.html}">Buttons</a></li>
-								<li><a th:href="@{alerts.html}">Alerts</a></li>
-							</ul></li>
+							<li class="dropdown "
+							><a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+							th:href="@{'/admin'}">Quản lý</a></li>
 						<!-- / Blog -->
 					</ul>
 					<!-- / .nav .navbar-nav -->

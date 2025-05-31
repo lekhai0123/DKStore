@@ -42,20 +42,15 @@
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					Blank page <small>it all starts here</small>
+					Quản lý người dùng
 				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li><a href="#">Examples</a></li>
-					<li class="active">Blank page</li>
-				</ol>
 			</section>
 
 			<!-- Main content -->
 			<section class="content">
 				<div class="box box-primary">
 					<div class="box-header">
-						<h3 class="box-title">Quick Example</h3>
+						<h3 class="box-title">Thêm người dùng</h3>
 					</div>
 					<!-- /.box-header -->
 					<!-- form start -->
@@ -64,31 +59,31 @@
 						<div class="box-body">
 							<div class="form-group col-md-4">
 								<label for="fullname">Họ và tên</label> <input type="text"
-									class="form-control" id="fullname" placeholder="Enter user name"
+									class="form-control" id="fullname" placeholder="Họ và tên"
 									th:field="*{fullName}">
 							</div>
 							<div class="form-group col-md-4">
 								<label for="Username">Username</label> <input type="text"
-									class="form-control" id="Username" placeholder="Enter user name"
+									class="form-control" id="Username" placeholder="Username"
 									th:field="*{userName}">
 							</div>
 							<div class="form-group col-md-4">
 								<label for="Email">Email</label> <input type="text"
-									class="form-control" id="Email" placeholder="Enter user name"
+									class="form-control" id="Email" placeholder="Email"
 									th:field="*{email}">
 							</div>
 							<div class="form-group col-md-6">
 								<label for="Password">Password</label> <input type="password"
-									class="form-control" id="Password" placeholder="Enter user name"
+									class="form-control" id="Password" placeholder="Password"
 									th:field="*{passWord}">
 							</div>
 							<div class="form-group col-md-6">
 								<label for="re-password">Xác nhận mật khẩu</label> <input type="password"
-									class="form-control" id="re-password" placeholder="Enter user name">
+									class="form-control" id="re-password" placeholder="Xác nhận mật khẩu">
 							</div>
 							<div class="form-group col-md-6">
 								<label for="birthday">Ngày sinh</label> <input type="date"
-									class="form-control " id="birthday" placeholder="Enter user name"
+									class="form-control " id="birthday" placeholder="Ngày sinh"
 									th:field="*{birthday}">
 							</div>
 							<div class="form-group col-md-6">
@@ -101,19 +96,20 @@
 							</div>
 							<div class="form-group col-md-6">
 								<label for="address">Địa chỉ</label> <input type="text"
-									class="form-control" id="address" placeholder="Enter user name"
+									class="form-control" id="address" placeholder="Địa chỉ"
 									th:field="*{address}">
 							</div>
 							<div class="form-group col-md-6">
 								<label for="phone">Số điện thoại</label> <input type="text"
-									class="form-control" id="phone" placeholder="Enter user name"
+									class="form-control" id="phone" placeholder="Số điện thoại"
 									th:field="*{telephone}">
 							</div>
 						</div>
 						<!-- /.box-body -->
 
 						<div class="box-footer">
-							<button type="submit" class="btn btn-primary">Submit</button>
+							<button type="submit" class="btn btn-primary">Lưu</button>
+							<a class="btn btn-secondary" th:href="@{/admin/user}">Trở lại</a>
 						</div>
 					</form>
 				</div>

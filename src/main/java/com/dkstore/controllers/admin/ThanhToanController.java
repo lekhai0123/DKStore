@@ -24,6 +24,7 @@ import com.dkstore.repository.ThanhToanRepository;
 import com.dkstore.services.ChiTietHoaDonService;
 import com.dkstore.services.GioHangService;
 import com.dkstore.services.HoaDonService;
+import com.dkstore.services.SanPhamTonKhoService;
 import com.dkstore.services.ThanhToanService;
 
 
@@ -40,6 +41,8 @@ public class ThanhToanController {
 	private HoaDonService hoaDonService;
 	@Autowired
 	private ChiTietHoaDonService chiTietHoaDonService;
+	@Autowired
+	private SanPhamTonKhoService sanPhamTonKhoService;
 	@GetMapping("/confirm-thanhtoan/{id}")
 	public String index(@PathVariable Integer id,Model model) {
 		ThanhToan thanhToan = this.thanhToanRepository.findByGiohangId(id);
@@ -75,6 +78,7 @@ public class ThanhToanController {
 	                // Lưu chi tiết hóa đơn vào cơ sở dữ liệu
 	                chiTietHoaDonService.create(chiTietHoaDon);
 	            }
+	            gioHangService.delete(idGiohang);
 			}			
 			return "redirect:/admin/giohang";
 		} else {

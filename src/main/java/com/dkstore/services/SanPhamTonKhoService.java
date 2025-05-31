@@ -14,6 +14,6 @@ public interface SanPhamTonKhoService {
 	Boolean update(SanPhamTonKho sanPhamTonKho);
 	Boolean delete(Integer id);
 	Page<SanPhamTonKho> getAll(Integer pageNo);
-	void updateTonKho(Integer size, Integer productId, Integer oldSoLuong, Integer newSoLuong);
+	Integer updateTonKho(Integer size, Integer productId, Integer oldSoLuong, Integer newSoLuong);
 	Boolean deleteGioHangAndUpdateTonKho(Integer gioHangId);
 }

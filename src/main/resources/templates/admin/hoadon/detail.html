@@ -39,13 +39,8 @@
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					Blank page <small>it all starts here</small>
+					Quản lý hoá đơn
 				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li><a href="#">Examples</a></li>
-					<li class="active">Blank page</li>
-				</ol>
 			</section>
 
 			<!-- Main content -->
@@ -55,7 +50,7 @@
 						<div class="col-md-12">
 							<div class="box">
 								<div class="box-header">
-									<h3 class="box-title">Bordered Table</h3>
+									<h3 class="box-title">Bảng chi tiết hoá đơn</h3>
 								</div>
 								<!-- /.box-header -->
 								<div class="box-body ">
@@ -71,7 +66,7 @@
 														</th>
 														<th colspan="2" style="width: 25%;">Ngày lập: <span
 															th:text="${hoadon.ngaylap}"></span></th>
-														<th colspan="2" style="width: 25%;"><a class="btn btn-success pull-right" th:href="@{'/admin/add-chitiethoadon'(idHoadon=${hoadon.id})}">Add new detail</a></th>
+														<th colspan="2" style="width: 25%;"><a class="btn btn-success pull-right" th:href="@{'/admin/add-chitiethoadon'(idHoadon=${hoadon.id})}">Thêm chi tiết hoá đơn</a></th>
 													</tr>
 												</table>
 											</div>
@@ -93,10 +88,10 @@
 															<td th:text="${chitiet.gia}"></td>
 															<td th:text="${chitiet.tonggiasanpham}"></td>
 															<td><a class="btn btn-warning"
-														th:href="@{/admin/edit-chitiethoadon/{id}(id=${chitiet.id})}">Edit</a>
+														th:href="@{/admin/edit-chitiethoadon/{id}(id=${chitiet.id})}">Sửa</a>
 														<a class="btn btn-danger"
 														th:href="@{/admin/delete-chitiethoadon/{id}(id=${chitiet.id})}"
-														onclick="return confirm('Bạn có chắc muốn xoá chi tiết hoá đơn này?')">Delete</a></td>
+														onclick="return confirm('Bạn có chắc muốn xoá chi tiết hoá đơn này?')">Xoá</a></td>
 														</tr>
 													</tbody>
 												</table>
@@ -106,7 +101,7 @@
 													th:text="${hoadon.tongtien}"></span>
 												<div class="pull-right">
 													<a class="btn btn-secondary"
-														th:href="@{/admin/hoadon}" >Back</a>
+														th:href="@{/admin/hoadon}" >Trở lại</a>
 												</div>
 											</div>
 										</div>

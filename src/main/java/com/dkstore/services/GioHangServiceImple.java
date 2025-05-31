@@ -93,10 +93,4 @@ public class GioHangServiceImple implements GioHangService{
 		return new PageImpl<GioHang>(list, pageable, this.search(keyword).size());
 	}
 
-	@Override
-	public String getMiniGioHang() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

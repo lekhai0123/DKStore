@@ -80,6 +80,14 @@
     });
     $('.hero-slider').slickAnimation();
 
-
-
+	$(document).ready(function() {
+	       // Tạo phần tử <link>
+	       var link = $('<link rel="shortcut icon" type="image/x-icon" />').attr('href', '/assets/img/logo3.png');
+	       
+	       // Thêm thẻ <link> vào trong thẻ <head>
+	       $('head').append(link);
+	   });
+	   document.addEventListener("DOMContentLoaded", function() {
+	   	    document.title = "DKStore";  // Tiêu đề mới mà bạn muốn thay thế
+	   	});
 })(jQuery);

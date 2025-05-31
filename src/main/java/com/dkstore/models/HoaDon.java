@@ -101,9 +101,10 @@ public class HoaDon {
 		ChiTietHoaDon = chiTietHoaDon;
 	}
 
-	public void addDetail(Float giaban, Integer soluong, Product product, Float tonggiasanpham) {
+	public void addDetail(Float giaban,Integer size, Integer soluong, Product product, Float tonggiasanpham) {
 	    ChiTietHoaDon chiTiet = new ChiTietHoaDon();
 	    chiTiet.setGia(giaban);
+	    chiTiet.setSize(size);
 	    chiTiet.setSoluong(soluong);
 	    chiTiet.setProduct(product); // Thiết lập sản phẩm
 	    chiTiet.setHoadon(this); // Thiết lập hóa đơn hiện tại cho chi tiết hóa đơn

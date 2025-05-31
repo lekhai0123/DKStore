@@ -24,10 +24,10 @@ public class BrandServiceImple implements BrandService {
 	}
 
 	@Override
-	public Boolean create(Brand category) {
+	public Boolean create(Brand brand) {
 		// TODO Auto-generated method stub
 		try {
-			this.brandRepository.save(category);
+			this.brandRepository.save(brand);
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -43,10 +43,10 @@ public class BrandServiceImple implements BrandService {
 	}
 
 	@Override
-	public Boolean update(Brand category) {
+	public Boolean update(Brand brand) {
 		// TODO Auto-generated method stub
 		try {
-			this.brandRepository.save(category);
+			this.brandRepository.save(brand);
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception

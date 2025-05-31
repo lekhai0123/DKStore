@@ -15,10 +15,9 @@
 	content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="author" content="Themefisher">
 <meta name="generator" content="Themefisher Constra HTML Template v1.0">
-
-<!-- Favicon -->
-<link rel="shortcut icon" type="image/x-icon"
-	th:href="@{/fe/images/favicon.png}" />
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
+	rel="stylesheet">
 
 <!-- Themefisher Icon font -->
 <link rel="stylesheet"
@@ -48,23 +47,6 @@
 	<div th:replace="~{/user/layout/menu :: menu}"></div>
 	<section class="single-product">
 		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-					<ol class="breadcrumb">
-						<li><a th:href="@{index.html}">Home</a></li>
-						<li><a th:href="@{shop.html}">Shop</a></li>
-						<li class="active">Single Product</li>
-					</ol>
-				</div>
-				<div class="col-md-6">
-					<ol class="product-pagination text-right">
-						<li><a th:href="@{blog-left-sidebar.html}"><i
-								class="tf-ion-ios-arrow-left"></i> Next </a></li>
-						<li><a th:href="@{blog-left-sidebar.html}">Preview <i
-								class="tf-ion-ios-arrow-right"></i></a></li>
-					</ol>
-				</div>
-			</div>
 			<div class="row mt-20">
 				<div class="col-md-5">
 					<div class="single-product-slider">
@@ -105,35 +87,39 @@
 				</div>
 				<div class="col-md-7">
 					<div class="single-product-details">
-						<form  role="form" th:action="@{/user/add-giohang}" method="post"
-						th:object="${giohang}" enctype="multipart/form-data" >
+						<form role="form" th:action="@{/user/add-giohang}" method="post"
+							id="gioHangForm" th:object="${giohang}">
 							<input type="hidden" name="userId"
-								th:value="${principal?.id != null ? principal.id : 50}">
-							<input type="hidden" th:value="${product.price}" name="gia"> 
+								th:value="${userId}">
+							<input type="hidden" th:value="${product.price}" name="gia">
 							<input type="hidden" th:value="${product.id}" name="productId">
+
 							<div style="display: flex; gap: 10px;">
 								<h2 th:text="${brand.name}"></h2>
 								<h2 th:text="${product.name}"></h2>
 							</div>
 
-							<p class="product-price" th:text="${product.price}"></p>
-
+							<p class="product-price" th:text="${gia}"></p>
 							<p class="product-description mt-20"
 								th:utext="${product.description}"></p>
+
 							<div class="product-size">
-								<span>Size:</span> <select class="form-control" name="size">
-									<option th:each="item : ${tonkho}"  th:value="${item.size}" th:text="${item.size}" ></option>
+								<span>Kích cỡ:</span> <select class="form-control" name="size">
+									<option th:each="item : ${tonkho}" th:value="${item.size}"
+										th:text="${item.size}"></option>
 								</select>
 							</div>
 							<div class="product-quantity">
-								<span>Quantity:</span>
+								<span>Số lượng:</span>
 								<div class="product-quantity-slider">
 									<input id="product-quantity" type="text" value="0"
 										name="soluong">
 								</div>
 							</div>
-							<button type="submit" class="btn btn-main mt-20">Add
-							To Cart</button>
+
+							<!-- Nút thêm giỏ hàng -->
+							<button type="button" id="addToCartBtn"
+								class="btn btn-main mt-20">Thêm vào giỏ hàng</button>
 						</form>
 					</div>
 				</div>
@@ -144,97 +130,11 @@
 						<ul class="nav nav-tabs">
 							<li class="active"><a data-toggle="tab"
 								th:href="@{#details}" aria-expanded="true">Details</a></li>
-							<li class=""><a data-toggle="tab" th:href="@{#reviews}"
-								aria-expanded="false">Reviews (3)</a></li>
 						</ul>
 						<div class="tab-content patternbg">
 							<div id="details" class="tab-pane fade active in">
 								<h4>Mô tả sản phẩm</h4>
 								<p th:utext="${product.description}"></p>
-							</div>
-							<div id="reviews" class="tab-pane fade">
-								<div class="post-comments">
-									<ul class="media-list comments-list m-bot-50 clearlist">
-										<!-- Comment Item start-->
-										<li class="media"><a class="pull-left" th:href="@{#!}">
-												<img class="media-object comment-avatar"
-												th:src="@{/fe/images/blog/avater-1.jpg}" alt="" width="50"
-												height="50" />
-										</a>
-
-											<div class="media-body">
-												<div class="comment-info">
-													<h4 class="comment-author">
-														<a th:href="@{#!}">Jonathon Andrew</a>
-
-													</h4>
-													<time datetime="2013-04-06T13:53">July 02, 2015, at
-														11:34</time>
-													<a class="comment-button" th:href="@{#!}"><i
-														class="tf-ion-chatbubbles"></i>Reply</a>
-												</div>
-
-												<p>Lorem ipsum dolor sit amet, consectetur adipiscing
-													elit. Quisque at magna ut ante eleifend eleifend.Lorem
-													ipsum dolor sit amet, consectetur adipisicing elit. Quod
-													laborum minima, reprehenderit laboriosam officiis
-													praesentium? Impedit minus provident assumenda quae.</p>
-											</div></li>
-										<!-- End Comment Item -->
-
-										<!-- Comment Item start-->
-										<li class="media"><a class="pull-left" th:href="@{#!}">
-												<img class="media-object comment-avatar"
-												th:src="@{/fe/images/blog/avater-4.jpg}" alt="" width="50"
-												height="50" />
-										</a>
-
-											<div class="media-body">
-
-												<div class="comment-info">
-													<div class="comment-author">
-														<a th:href="@{#!}">Jonathon Andrew</a>
-													</div>
-													<time datetime="2013-04-06T13:53">July 02, 2015, at
-														11:34</time>
-													<a class="comment-button" th:href="@{#!}"><i
-														class="tf-ion-chatbubbles"></i>Reply</a>
-												</div>
-
-												<p>Lorem ipsum dolor sit amet, consectetur adipiscing
-													elit. Quisque at magna ut ante eleifend eleifend. Lorem
-													ipsum dolor sit amet, consectetur adipisicing elit. Magni
-													natus, nostrum iste non delectus atque ab a accusantium
-													optio, dolor!</p>
-
-											</div></li>
-										<!-- End Comment Item -->
-
-										<!-- Comment Item start-->
-										<li class="media"><a class="pull-left" th:href="@{#!}">
-												<img class="media-object comment-avatar"
-												th:src="@{/fe/images/blog/avater-1.jpg}" alt="" width="50"
-												height="50">
-										</a>
-
-											<div class="media-body">
-
-												<div class="comment-info">
-													<div class="comment-author">
-														<a th:href="@{#!}">Jonathon Andrew</a>
-													</div>
-													<time datetime="2013-04-06T13:53">July 02, 2015, at
-														11:34</time>
-													<a class="comment-button" th:href="@{#!}"><i
-														class="tf-ion-chatbubbles"></i>Reply</a>
-												</div>
-
-												<p>Lorem ipsum dolor sit amet, consectetur adipiscing
-													elit. Quisque at magna ut ante eleifend eleifend.</p>
-
-											</div></li>
-									</ul>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -246,33 +146,34 @@
 		<div class="container">
 			<div class="row">
 				<div class="title text-center">
-					<h2>Related Products</h2>
+					<h2>SẢN PHẨM TƯƠNG TỰ</h2>
 				</div>
 			</div>
 			<div class="row">
-				<div th:each="product : ${topProducts}" class="col-md-3">
+				<div th:each="product : ${productList}" class="col-md-3">
 					<div class="product-item">
 						<div class="product-thumb">
 							<span class="bage">Sale</span>
 							<!-- Load URL ảnh từ DB -->
-							<img class="img-responsive" th:src="@{${product.mainImage}}"
+							<img class="img-responsive" th:src="@{${product.item.mainImage}}"
 								alt="product-img" />
 							<div class="preview-meta">
 								<ul>
 									<li><span data-toggle="modal"
-										th:data-target="'#product-modal-' + ${product.id}"> <i
-											class="tf-ion-ios-search-strong"></i>
+										th:data-target="'#product-modal-' + ${product.item.id}">
+											<i class="tf-ion-ios-search-strong"></i>
 									</span></li>
-									<li><a th:href="@{#}"><i class="tf-ion-ios-heart"></i></a></li>
-									<li><a th:href="@{#}"><i class="tf-ion-android-cart"></i></a></li>
+									<li><a th:href="'/shop/'+${product.item.id}"><i
+											class="tf-ion-android-cart"></i></a></li>
 								</ul>
 							</div>
 						</div>
 						<div class="product-content">
 							<h4>
-								<a th:href="@{product-single.html}" th:text="${product.name}"></a>
+								<a th:href="@{product-single.html}"
+									th:text="${product.item.name}"></a>
 							</h4>
-							<p class="price" th:text="${product.price}"></p>
+							<p class="price" th:text="${product.gia}"></p>
 						</div>
 					</div>
 				</div>
@@ -283,10 +184,10 @@
 
 
 	<!-- Modal -->
-	<div th:each="product : ${topProducts}">
+	<div th:each="product : ${productList}">
 		<div class="modal product-modal fade"
-			th:id="'product-modal-' + ${product.id}" tabindex="-1" role="dialog"
-			aria-labelledby="productModalLabel" aria-hidden="true">
+			th:id="'product-modal-' + ${product.item.id}" tabindex="-1"
+			role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
 			<button type="button" class="close" data-dismiss="modal"
 				aria-label="Close">
 				<i class="tf-ion-close"></i>
@@ -298,19 +199,18 @@
 							<div class="col-md-8 col-sm-6 col-xs-12">
 								<div class="modal-image">
 									<!-- Tải ảnh sản phẩm từ DB nếu có -->
-									<img class="img-responsive" th:src="@{${product.mainImage}}"
-										alt="product-img" />
+									<img class="img-responsive"
+										th:src="@{${product.item.mainImage}}" alt="product-img" />
 								</div>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
 								<div class="product-short-details">
-									<h2 class="product-title" th:text="${product.name}"></h2>
-									<p class="product-price" th:text="${product.price}"></p>
+									<h2 class="product-title" th:text="${product.item.name}"></h2>
+									<p class="product-price" th:text="${product.gia}"></p>
 									<p class="product-short-description"
-										th:utext="${product.description}"></p>
-									<a th:href="@{cart.html}" class="btn btn-main">Add To Cart</a>
-									<a th:href="'/shop/'+${product.id}" class="btn btn-transparent">View
-										Product Details</a>
+										th:utext="${product.item.description}"></p>
+									<a th:href="'/shop/'+${product.item.id}" class="btn btn-main">Mua
+										ngay</a>
 								</div>
 							</div>
 						</div>
@@ -319,6 +219,8 @@
 			</div>
 		</div>
 	</div>
+	<input type="hidden" th:value="${userId}" id="userId1">
+
 	<div th:replace="~{/user/layout/footer:: footer}"></div>
 	<!-- 
     Essential Scripts
@@ -342,15 +244,12 @@
 	<script th:src="@{/fe/plugins/slick/slick.min.js}"></script>
 	<script th:src="@{/fe/plugins/slick/slick-animation.min.js}"></script>
 
-	<!-- Google Mapl -->
 	<script
-		th:src="@{https://maps.googleapis.com/maps/api/js?key=AIzaSyCC72vZw-6tGqFyRhhg5CkF2fqfILn2Tsw}"></script>
-	<script type="text/javascript"
-		th:src="@{/fe/plugins/google-map/gmap.js}"></script>
+		src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 	<!-- Main Js File -->
 	<script th:src="@{/fe/js/script.js}"></script>
-<script>
+	<script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll("strong").forEach(element => {
             console.log("Checking element:", element.innerHTML);
@@ -370,6 +269,38 @@
                     span.textContent = value.toFixed(2); // Làm tròn 2 chữ số thập phân nếu không phải số nguyên
                 }
             }
+        });
+    });
+    $(document).ready(function () {
+        $("#addToCartBtn").click(function (event) {
+            event.preventDefault(); 
+            const userId = parseInt($("#userId1").val(), 10);
+            console.log("User ID:", userId);
+            if (isNaN(userId)) {
+                toastr.error("Vui lòng đăng nhập để đặt hàng.");
+                return;
+            }
+            const quantity = parseInt($("#product-quantity").val(), 10);
+            if (quantity === 0 || isNaN(quantity)) {
+                toastr.error("Vui lòng chọn số lượng sản phẩm.");
+                return;
+            }
+            const formData = $("#gioHangForm").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/user/add-giohang",
+                data: formData,
+                success: function (response) {
+                    if (response === "success") {
+                        window.location.href = "/shop";
+                    } else {
+                        toastr.error(response);
+                    }
+                },
+                error: function () {
+                    toastr.error("Có lỗi xảy ra, vui lòng thử lại!");
+                }
+            });
         });
     });
 </script>

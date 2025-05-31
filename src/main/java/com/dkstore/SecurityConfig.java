@@ -39,12 +39,9 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    return http.csrf(csrf -> csrf.disable())
 	            .authorizeHttpRequests(auth -> auth
-//	                    .requestMatchers("/admin", "/admin/**").hasAuthority("ADMIN")  // Chỉ cho phép người dùng có quyền ADMIN vào /admin
-	            		.requestMatchers("/user", "/user/**").permitAll()
-	            		
-	            		.requestMatchers("/*").permitAll()  // Cho phép tất cả mọi người truy cập vào các trang khác	                    
-//	                    .requestMatchers("/user", "/user/**").hasAuthority("USER")
-	                    .requestMatchers("/admin", "/admin/**","/shop/**").permitAll()
+	                    .requestMatchers("/admin", "/admin/**").hasAuthority("ADMIN")  // Chỉ cho phép người dùng có quyền ADMIN vào /admin
+	            		.requestMatchers("/*","/shop/**").permitAll()  // Cho phép tất cả mọi người truy cập vào các trang khác	                    
+	            		.requestMatchers("/user", "/user/**").hasAnyAuthority("USER", "ADMIN")
 	                    .anyRequest().authenticated())  // Các yêu cầu khác yêu cầu người dùng đã đăng nhập
 	            .formLogin(login -> login
 	                    .loginPage("/login")  // Đặt trang đăng nhập
@@ -73,7 +70,7 @@ public class SecurityConfig {
 	                    })
 	                    .successHandler(authenticationSuccessHandler())  // Sử dụng AuthenticationSuccessHandler tùy chỉnh
 	            )
-	            .logout(logout -> logout.logoutUrl("/admin-logout").logoutSuccessUrl("/login"))  // Đăng xuất và chuyển hướng về trang login
+	            .logout(logout -> logout.logoutUrl("/admin-logout").invalidateHttpSession(true).clearAuthentication(true).logoutSuccessUrl("/login").permitAll())  // Đăng xuất và chuyển hướng về trang login
 	            .userDetailsService(customUserDetailService)  // Sử dụng custom UserDetailsService
 	            .build();
 	}

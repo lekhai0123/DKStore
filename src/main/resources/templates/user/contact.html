@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<!-- Basic Page Needs
+  ================================================== -->
+<meta charset="utf-8">
+<title>DKStore</title>
+
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Construction Html5 Template">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="author" content="Themefisher">
+<meta name="generator" content="Themefisher Constra HTML Template v1.0">
+
+<!-- Favicon -->
+<link rel="shortcut icon" type="image/x-icon"
+	th:href="@{/assets/img/logo3.png}" />
+
+<!-- Themefisher Icon font -->
+<link rel="stylesheet"
+	th:href="@{/fe/plugins/themefisher-font/style.css}">
+<!-- bootstrap.min css -->
+<link rel="stylesheet"
+	th:href="@{/fe/plugins/bootstrap/css/bootstrap.min.css}">
+
+<!-- Animate css -->
+<link rel="stylesheet" th:href="@{/fe/plugins/animate/animate.css}">
+<!-- Slick Carousel -->
+<link rel="stylesheet" th:href="@{/fe/plugins/slick/slick.css}">
+<link rel="stylesheet" th:href="@{/fe/plugins/slick/slick-theme.css}">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!-- Main Stylesheet -->
+<link rel="stylesheet" th:href="@{/fe/css/style.css}">
+
+</head>
+
+<body id="body">
+
+	<!-- Start Top Header Bar -->
+	<div th:replace="~{/user/layout/header :: header}"></div>
+	<!-- End Top Header Bar -->
+
+
+	<!-- Main Menu Section -->
+	<div th:replace="~{/user/layout/menu :: menu}"></div>
+
+	
+	<!-- End section -->
+	<section class="contact_section ">
+		<div class="container px-0">
+			<div class="heading_container ">
+				<h2 class="">Liên hệ</h2>
+			</div>
+		</div>
+		<div class="container container-bg">
+			<div class="row">
+				<div class="col-lg-7 col-md-6 px-0">
+					<div class="map_container">
+						<div class="map-responsive">
+							<div id="map"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 col-lg-5 px-0">
+					<form th:action="@{/your-form-action}" method="post"
+						style="height: 100%">
+						<div>
+							<input type="text" placeholder="Tên" name="name" />
+						</div>
+						<div>
+							<input type="email" placeholder="Email" name="email" />
+						</div>
+						<div>
+							<input type="text" placeholder="Số điện thoại" name="phone" />
+						</div>
+						<div>
+							<input type="text" class="message-box" placeholder="Tin nhắn"
+								name="message" />
+						</div>
+						<div class="d-flex ">
+							<button type="submit">Gửi</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<div th:replace="~{/user/layout/footer:: footer}"></div>
+
+
+
+	<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	<!-- 
+    Essential Scripts
+    =====================================-->
+
+	<!-- Main jQuery -->
+	<script th:src="@{/fe/plugins/jquery/dist/jquery.min.js}"></script>
+	<!-- Bootstrap 3.1 -->
+	<script th:src="@{/fe/plugins/bootstrap/js/bootstrap.min.js}"></script>
+	<!-- Bootstrap Touchpin -->
+	<script
+		th:src="@{/fe/plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js}"></script>
+	<!-- Instagram Feed Js -->
+	<script th:src="@{/fe/plugins/instafeed/instafeed.min.js}"></script>
+	<!-- Video Lightbox Plugin -->
+	<script th:src="@{/fe/plugins/ekko-lightbox/dist/ekko-lightbox.min.js}"></script>
+	<!-- Count Down Js -->
+	<script th:src="@{/fe/plugins/syo-timer/build/jquery.syotimer.min.js}"></script>
+
+	<!-- slick Carousel -->
+	<script th:src="@{/fe/plugins/slick/slick.min.js}"></script>
+	<script th:src="@{/fe/plugins/slick/slick-animation.min.js}"></script>
+
+
+
+
+	<!-- Main Js File -->
+	<script th:src="@{/fe/js/script.js}"></script>
+	<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("strong").forEach(element => {
+            const value = parseFloat(element.innerHTML.trim());
+            if (!isNaN(value)) {
+                if (Number.isInteger(value)) {
+                    element.innerHTML = value.toFixed(0); // Xóa .0 nếu là số nguyên
+                }
+            }
+        });
+        document.querySelectorAll(".cart-price span").forEach(span => {
+            const value = parseFloat(span.textContent.trim());
+            if (!isNaN(value)) {
+                if (Number.isInteger(value)) {
+                    span.textContent = value.toFixed(0); // Xóa .0 nếu là số nguyên
+                } else {
+                    span.textContent = value.toFixed(2); // Làm tròn 2 chữ số thập phân nếu không phải số nguyên
+                }
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+	    var map = L.map('map').setView([10.7769, 106.7009], 12); // Tọa độ trung tâm TP.HCM
+
+	    // Thêm tile layer từ OpenStreetMap
+	    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	        maxZoom: 19,
+	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	    }).addTo(map);
+
+	    // Thêm các marker cho trung tâm thương mại nổi tiếng với tên và địa chỉ
+	    L.marker([10.795328967199646, 106.72178578099154]).addTo(map)
+	        .bindPopup('<b>Landmark 81</b><br>720A Điện Biên Phủ, Vinhomes Tân Cảng, Bình Thạnh, Hồ Chí Minh 72300, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=10.795328967199646, 106.72178578099154" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([10.773741402963582, 106.70043835066323]).addTo(map)
+	        .bindPopup('<b>Saigon Centre - Takashimaya</b><br>65 Đ. Lê Lợi, Bến Nghé, Quận 1, Hồ Chí Minh 70000, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=10.773741402963582, 106.70043835066323" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([10.728756556550518, 106.71880043902142]).addTo(map)
+	        .bindPopup('<b>Crescent Mall</b><br>101 Đ Tôn Dật Tiên, Tân Phú, Quận 7, Hồ Chí Minh 07000, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=10.728756556550518, 106.71880043902142" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([10.778108603716111, 106.70168258135057]).addTo(map)
+	        .bindPopup('<b>Vincom Center Đồng Khởi</b><br>72 Đ. Lê Thánh Tôn, Bến Nghé, Quận 1, Hồ Chí Minh, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=10.778108603716111, 106.70168258135057" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([21.011089705923805, 105.8495904239334]).addTo(map)
+	        .bindPopup('<b>Vincom Center Bà Triệu - Hà Nội</b><br>191 P. Bà Triệu, Lê Đại Hành, Hai Bà Trưng, Hà Nội, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=21.011089705923805, 105.8495904239334" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([21.031987935491344, 105.81291060859049]).addTo(map)
+	        .bindPopup('<b>Lotte Center Hà Nội</b><br>54 P. Liễu Giai, Ngọc Khánh, Ba Đình, Hà Nội, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=21.031987935491344, 105.81291060859049" target="_blank">Xem lộ trình</a>');
+
+	    L.marker([21.027547482698544, 105.89966693927748]).addTo(map)
+	        .bindPopup('<b>Aeon Mall Long Biên - Hà Nội</b><br>27 Đ. Cổ Linh, Long Biên, Hà Nội, Vietnam<br><a href="https://www.google.com/maps/dir/?api=1&destination=21.027547482698544, 105.89966693927748" target="_blank">Xem lộ trình</a>');
+	});
+</script>
+</body>
+</html>

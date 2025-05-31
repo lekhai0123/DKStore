@@ -16,9 +16,6 @@
 <meta name="author" content="Themefisher">
 <meta name="generator" content="Themefisher Constra HTML Template v1.0">
 
-<!-- Favicon -->
-<link rel="shortcut icon" type="image/x-icon"
-	th:href="@{images/favicon.png}" />
 
 <!-- Themefisher Icon font -->
 <link rel="stylesheet"
@@ -78,23 +75,29 @@
 									<h4 class="panel-title">
 										<a role="button" data-toggle="collapse"
 											data-parent="#accordion" th:href="@{#collapseOne}"
-											aria-expanded="true" aria-controls="collapseOne"> Thương hiệu </a>
+											aria-expanded="true" aria-controls="collapseOne"> Thương
+											hiệu </a>
 									</h4>
 								</div>
 								<div id="collapseOne" class="panel-collapse collapse in"
 									role="tabpanel" aria-labelledby="headingOne">
 									<form action="/shop" method="get">
+										<div
+											style="display: flex; flex-direction: column; align-items: center;">
+											<input type="search" class="form-control" name="keyword"
+												style="width: 90%; margin: 10px" placeholder="Search...">
+										</div>
 										<ul>
-											<li th:each="item:${listBrands}"><input type="checkbox"
-												name="brand" th:value="${item.name}"> <span
-												th:text="${item.name}" style="margin-left: 8px;"></span></li>
+											<li th:each="item : ${listBrands}"><input
+												type="checkbox" name="brand" th:value="${item.name}"
+												style="margin-left: 8px;" /> <span th:text="${item.name}"
+												style="padding-left: 5px;"></span></li>
 										</ul>
 										<div
 											style="display: flex; flex-direction: column; align-items: center;">
 											<input type="submit" value="Lọc" class="btn btn-default"
 												style="margin: 10px; width: 90%;">
 										</div>
-
 									</form>
 								</div>
 							</div>
@@ -105,39 +108,39 @@
 				<div class="col-md-9">
 					<div class="row">
 
-						<div th:each="product : ${products}" class="col-md-4">
+						<div th:each="product : ${productList}" class="col-md-4">
 							<div class="product-item">
 								<div class="product-thumb">
 									<span class="bage">Sale</span>
 									<!-- Load URL ảnh từ DB -->
-									<img class="img-responsive" th:src="@{${product.mainImage}}"
-										alt="product-img" />
+									<img class="img-responsive"
+										th:src="@{${product.item.mainImage}}" alt="product-img" />
 									<div class="preview-meta">
 										<ul>
 											<li><span data-toggle="modal"
-												th:data-target="'#product-modal-' + ${product.id}"> <i
-													class="tf-ion-ios-search-strong"></i>
+												th:data-target="'#product-modal-' + ${product.item.id}">
+													<i class="tf-ion-ios-search-strong"></i>
 											</span></li>
-											<li><a th:href="@{#}"><i class="tf-ion-ios-heart"></i></a></li>
-											<li><a th:href="@{#}"><i class="tf-ion-android-cart"></i></a></li>
+											<li><a th:href="'/shop/'+${product.item.id}"><i
+													class="tf-ion-android-cart"></i></a></li>
 										</ul>
 									</div>
 								</div>
 								<div class="product-content">
 									<h4>
-										<a th:href="@{product-single.html}"><span
-											th:text="${product.brand.name}"></span> <span
-											th:text="${product.name}"></span></a>
+										<a th:href="'/shop/'+${product.item.id}"><span
+											th:text="${product.item.brand.name}"></span> <span
+											th:text="${product.item.name}"></span></a>
 									</h4>
-									<p class="price" th:text="${product.price}"></p>
+									<p class="price" th:text="${product.gia}"></p>
 								</div>
 							</div>
 						</div>
 
 						<!-- Modal -->
-						<div th:each="product : ${products}">
+						<div th:each="product : ${productList}">
 							<div class="modal product-modal fade"
-								th:id="'product-modal-' + ${product.id}" tabindex="-1"
+								th:id="'product-modal-' + ${product.item.id}" tabindex="-1"
 								role="dialog" aria-labelledby="productModalLabel"
 								aria-hidden="true">
 								<button type="button" class="close" data-dismiss="modal"
@@ -152,18 +155,17 @@
 													<div class="modal-image">
 														<!-- Tải ảnh sản phẩm từ DB nếu có -->
 														<img class="img-responsive"
-															th:src="@{${product.mainImage}}" alt="product-img" />
+															th:src="@{${product.item.mainImage}}" alt="product-img" />
 													</div>
 												</div>
 												<div class="col-md-4 col-sm-6 col-xs-12">
 													<div class="product-short-details">
-														<h2 class="product-title" th:text="${product.name}"></h2>
-														<p class="product-price" th:text="${product.price}"></p>
+														<h2 class="product-title" th:text="${product.item.name}"></h2>
+														<p class="product-price" th:text="${product.gia}"></p>
 														<p class="product-short-description"
-															th:utext="${product.description}"></p>
-														<a th:href="@{cart.html}" class="btn btn-main">Add To
-															Cart</a> <a th:href="'/shop/'+${product.id}"
-															class="btn btn-transparent">View Product Details</a>
+															th:utext="${product.item.description}"></p>
+														<a th:href="'/shop/'+${product.item.id}"
+															class="btn btn-main">Mua ngay</a>
 													</div>
 												</div>
 											</div>
@@ -173,7 +175,25 @@
 							</div>
 						</div>
 						<!-- /.modal -->
-
+					</div>
+					<div class="box-footer clearfix">
+						<ul class="pagination pagination-sm m-0"
+							style="display: flex; justify-content: center;">
+							<!-- Previous page link -->
+							<li th:if="${productPage.hasPrevious()}" class="page-item">
+								<a class="page-link"
+								th:href="@{/shop(pageNo=${productPage.number})}">«</a>
+							</li>
+							<!-- Page number links -->
+							<li th:each="i : ${#numbers.sequence(1, productPage.totalPages)}"
+								th:classappend="${productPage.number == i - 1 ? 'active' : ''}"
+								class="page-item"><a class="page-link" th:text="${i}"
+								th:href="@{/shop(pageNo=${i})}"></a></li>
+							<!-- Next page link -->
+							<li th:if="${productPage.hasNext()}" class="page-item"><a
+								class="page-link"
+								th:href="@{/shop(pageNo=${productPage.number + 2})}">»</a></li>
+						</ul>
 					</div>
 				</div>
 
@@ -204,18 +224,12 @@
 	<script th:src="@{/fe/plugins/slick/slick.min.js}"></script>
 	<script th:src="@{/fe/plugins/slick/slick-animation.min.js}"></script>
 
-	<!-- Google Mapl -->
-	<script
-		th:src="@{https://maps.googleapis.com/maps/api/js?key=AIzaSyCC72vZw-6tGqFyRhhg5CkF2fqfILn2Tsw}"></script>
-	<script type="text/javascript"
-		th:src="@{/fe/plugins/google-map/gmap.js}"></script>
 
 	<!-- Main Js File -->
 	<script th:src="@{/fe/js/script.js}"></script>
 	<script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll("strong").forEach(element => {
-            console.log("Checking element:", element.innerHTML);
             const value = parseFloat(element.innerHTML.trim());
             if (!isNaN(value)) {
                 if (Number.isInteger(value)) {

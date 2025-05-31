@@ -1,12 +1,14 @@
 package com.dkstore.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.dkstore.models.HinhAnhSanPham;
@@ -101,7 +103,7 @@ public class ProductServiceImple implements ProductService {
 	@Override
 	public List<Product> getTop6Products() {
 		// TODO Auto-generated method stub
-		return productRepository.findTop6ByOrderByIdDesc();
+		return productRepository.findTop6ByOrderByIdAsc();
 	}
 
 	@Override
@@ -126,4 +128,10 @@ public class ProductServiceImple implements ProductService {
         }
     }
 
+	@Override
+	public Page<Product> searchAndFilter(String keyword, List<String> brands, Integer pageNo) {
+		// TODO Auto-generated method stub
+		 Pageable pageable = PageRequest.of(pageNo - 1, 9); // Giới hạn 9 sản phẩm trên mỗi trang
+	        return productRepository.findByKeywordAndBrands(keyword, brands, pageable);
+	}
 }

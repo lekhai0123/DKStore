@@ -27,49 +27,61 @@
 					</a>
 				</div>
 			</div>
-			<h1 sec:authentication="name"></h1>
 			<div class="col-md-4 col-xs-12 col-sm-4">
 				<!-- Cart -->
 				<ul class="top-menu text-right list-inline">
-					<li class="dropdown cart-nav dropdown-slide"><a
-						th:href="@{#!}" class="dropdown-toggle" data-toggle="dropdown"
-						data-hover="dropdown"> <i class="tf-ion-android-cart"></i>Cart
-					</a>
-						<div class="dropdown-menu cart-dropdown">
-							<!-- Cart Items -->
-							<div th:each="item : ${chiTietGioHang}" class="media">
-								<a class="pull-left" th:href="@{#!}"> <img
-									class="media-object" th:src="@{${item.product.mainImage}}"
-									alt="image" />
-								</a>
-								<div class="media-body">
-									<h4 class="media-heading">
-										<a th:href="@{#!}" th:text="${item.product.name}"></a>
-									</h4>
-									<div class="cart-price">
-										<span th:text="${item.soLuong} "></span> x <span
-											th:text="${item.product.price}"></span>
-									</div>
-									<h5>
-										<span>Total: </span><strong
-											th:utext="${#numbers.formatDecimal(item.soLuong * item.product.price, 2, 2)}"></strong>
-									</h5>
-								</div>
-								<a th:href="@{#!}" class="remove"><i class="tf-ion-close"></i></a>
-							</div>
-							<!-- / Cart Items -->
+					<li class="dropdown cart-nav dropdown-slide">
+    <a th:href="@{#!}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+        <i class="tf-ion-android-cart"></i>Giỏ hàng
+    </a>
+    <div class="dropdown-menu cart-dropdown">
+        <!-- Kiểm tra nếu giỏ hàng có chi tiết -->
+        <div th:if="${#lists.isEmpty(chiTietGioHang)}">
+            <!-- Giỏ hàng trống -->
+            <div class="media">
+            <div class="media-body"><h4>Giỏ hàng trống</h4></div>
+                
+            </div>
+            <ul class="text-center cart-buttons">
+                <li><a th:href="@{/shop}" class="btn btn-small">Mua hàng ngay</a></li>
+            </ul>
+        </div>
 
-							<div class="cart-summary">
-								<span>Total: </span><span th:text="${totalPrice}"></span>
+        <div th:unless="${#lists.isEmpty(chiTietGioHang)}">
+            <!-- Giỏ hàng có sản phẩm -->
+            <div th:each="item : ${chiTietGioHang}" class="media">
+                <a class="pull-left" th:href="@{#!}">
+                    <img class="media-object" th:src="@{${item.product.mainImage}}" alt="image" />
+                </a>
+                <div class="media-body">
+                    <h4 class="media-heading">
+                        <a th:href="@{#!}" th:text="${item.product.name}"></a>
+                    </h4>
+                    <div class="cart-price">
+                        <span th:text="${item.soLuong} "></span> x <span th:text="${item.product.price}"></span>
+                    </div>
+                    <h5>
+                        <span>Tổng cộng: </span><strong
+                            th:utext="${#numbers.formatDecimal(item.soLuong * item.product.price, 2, 2)}"></strong>
+                    </h5>
+                </div>
+                <a th:href="@{/user/delete-chitietgiohang/{id}(id=${item.id})}" class="remove">
+                    <i class="tf-ion-close"></i>
+                </a>
+            </div>
 
-							</div>
-							<ul class="text-center cart-buttons">
-								<li><a th:href="@{/user/giohang}" class="btn btn-small">View
-										Cart</a></li>
-								<li><a th:href="@{/user/checkout/{id}(id=${giohangId})}"
-									class="btn btn-small btn-solid-border">Checkout</a></li>
-							</ul>
-						</div></li>
+            <!-- Tổng cộng và các nút thao tác -->
+            <div class="cart-summary">
+                <span>Tổng cộng: </span><span th:text="${totalPrice}"></span>
+            </div>
+            <ul class="text-center cart-buttons">
+                <li><a th:href="@{/user/giohang}" class="btn btn-small">Xem giỏ hàng</a></li>
+                <li><a th:href="@{/user/checkout/{id}(id=${giohangId})}" class="btn btn-small btn-solid-border">Thanh toán</a></li>
+            </ul>
+        </div>
+    </div>
+</li>
+
 
 					<!-- / Cart -->
 
@@ -80,12 +92,20 @@
 							Search</a>
 						<ul class="dropdown-menu search-dropdown">
 							<li>
-								<form action="post">
-									<input type="search" class="form-control"
+								<form action="/shop">
+									<input type="search" class="form-control" name="keyword"
 										placeholder="Search...">
 								</form>
 							</li>
 						</ul></li>
+					<li class="btn btn-danger"
+						th:if="${#authorization.expression('hasAuthority(''USER'') or hasAuthority(''ADMIN'')')}">
+						<a th:href="@{/admin-logout}">Logout</a>
+					</li>
+
+					<li class="btn btn-default"
+						th:if="${!#authorization.expression('isAuthenticated()')}"><a
+						th:href="@{/login}">Login</a></li>
 					<!-- / Search -->
 
 				</ul>

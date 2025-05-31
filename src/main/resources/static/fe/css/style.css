@@ -818,6 +818,23 @@ input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focu
   float: right;
 }
 
+.cart-dropdown .media h4 {
+    text-align: center;
+    font-weight: bold;
+    color: #666;
+}
+
+.cart-dropdown .cart-buttons {
+    margin-top: 15px;
+}
+
+
+.cart-dropdown .cart-buttons li a {
+    display: block;
+    text-align: center;
+    padding: 10px 0;
+}
+
 .navigation {
   margin-bottom: 0;
   padding: 10px 0;

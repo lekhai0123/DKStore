@@ -102,7 +102,7 @@ h3::before {
 input[type="email"],
 input[type="password"],
 input[type="text"],
-input[type="tel"] {
+input[type="tel"], input[type="date"],select {
   border: none;
   border-bottom: 2px solid #021e26;
   width: 100%;

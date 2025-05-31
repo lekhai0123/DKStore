@@ -16,6 +16,7 @@ public interface ProductService {
 	Page<Product> getAll(Integer pageNo,Integer size);
 	List<Product> search(String keyword);
 	Page<Product> search(String keyword, Integer pageNo,Integer size);
+	Page<Product> searchAndFilter(String keyword, List<String> brands, Integer pageNo);
 	List<Product> getTop6Products();
 	List<Product> getTop4Products();
 }

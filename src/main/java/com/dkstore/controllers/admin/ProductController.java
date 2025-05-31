@@ -150,62 +150,100 @@ public class ProductController {
 
 	@PostMapping("/edit-product")
 	public String update(@ModelAttribute Product product, 
-	                     @RequestParam("image_url1") MultipartFile[] files) {
+	                     @RequestParam(value = "image_url1", required = false) MultipartFile[] files) {
 	    // Lấy sản phẩm hiện tại từ DB
 	    Product existingProduct = this.productService.findById(product.getId());
 	    if (existingProduct == null) {
+	        System.out.println("Product not found with ID: " + product.getId());
 	        // Nếu không tìm thấy sản phẩm, xử lý lỗi
 	        return "redirect:/admin/product?error=not-found";
 	    }
+
+	    System.out.println("Existing product found: " + existingProduct.getName());
 
 	    // Cập nhật thông tin sản phẩm (trừ hình ảnh)
 	    existingProduct.setName(product.getName());
 	    existingProduct.setDescription(product.getDescription());
 	    existingProduct.setPrice(product.getPrice());
 	    existingProduct.setBrand(product.getBrand());
-	    // Thêm các trường khác cần cập nhật...
 
-	    // Xóa các hình ảnh cũ
+	    System.out.println("Updated product details: ");
+	    System.out.println("Name: " + product.getName());
+	    System.out.println("Description: " + product.getDescription());
+	    System.out.println("Price: " + product.getPrice());
+	    System.out.println("Brand: " + product.getBrand());
+
+	    // Lấy các hình ảnh cũ của sản phẩm
 	    Set<HinhAnhSanPham> existingImages = existingProduct.getHinhAnhSanPhams();
+	    System.out.println("Existing images count: " + (existingImages != null ? existingImages.size() : 0));
 
-	 // Xóa các hình ảnh cũ
-	 if (existingImages != null) {
-	     Iterator<HinhAnhSanPham> iterator = existingImages.iterator();
-	     while (iterator.hasNext()) {
-	         HinhAnhSanPham image = iterator.next();
-	         try {
-	             Path oldFilePath = Paths.get("src/main/resources/static" + image.getUrlImage());
-	             if (Files.exists(oldFilePath)) {
-	                 Files.delete(oldFilePath);
-	             }
-	         } catch (IOException e) {
-	             e.printStackTrace();
-	         }
-	         iterator.remove(); // Xóa khỏi collection
-	     }
-	 }
+	    System.out.println("Number of files uploaded: " + (files != null ? files.length : 0));
 
-	 // Thêm hình ảnh mới
-	 if (files != null && files.length > 0) {
-	     List<String> filePaths = this.storageService.storeMultiple(files);
-	     boolean isMainImageSet = false;
-	     for (String filePath : filePaths) {
-	         HinhAnhSanPham image = new HinhAnhSanPham();
-	         image.setUrlImage(filePath);
-	         image.setProduct(existingProduct);
-	         if (!isMainImageSet) {
-		            image.setMain(true); // Đánh dấu ảnh đầu tiên là ảnh chính
-		            isMainImageSet = true; // Đánh dấu đã thiết lập ảnh chính
-		        }
-	         existingImages.add(image); // Thêm vào collection hiện có
-	     }
-	 }
+	    // Chỉ xóa các hình ảnh cũ nếu có hình ảnh mới được truyền vào
+	    if (files != null && files.length > 0) {
+	        // Kiểm tra xem mảng files có chứa tệp hợp lệ không
+	        boolean hasValidFile = false;
+	        for (MultipartFile file : files) {
+	            if (!file.isEmpty()) {
+	                hasValidFile = true;
+	                System.out.println("Valid file found: " + file.getOriginalFilename());
+	                break;
+	            }
+	        }
+
+	        // Nếu có file hợp lệ
+	        if (hasValidFile) {
+	            // Xóa các hình ảnh cũ
+	            if (existingImages != null) {
+	                Iterator<HinhAnhSanPham> iterator = existingImages.iterator();
+	                while (iterator.hasNext()) {
+	                    HinhAnhSanPham image = iterator.next();
+	                    try {
+	                        Path oldFilePath = Paths.get("src/main/resources/static" + image.getUrlImage());
+	                        if (Files.exists(oldFilePath)) {
+	                            Files.delete(oldFilePath);
+	                            System.out.println("Deleted old image: " + oldFilePath);
+	                        }
+	                    } catch (IOException e) {
+	                        System.out.println("Error deleting image: " + e.getMessage());
+	                    }
+	                    iterator.remove(); // Xóa khỏi collection
+	                }
+	            }
+
+	            // Thêm hình ảnh mới
+	            List<String> filePaths = this.storageService.storeMultiple(files);
+	            System.out.println("Stored file paths: " + filePaths);
+
+	            boolean isMainImageSet = false;
+	            for (String filePath : filePaths) {
+	                HinhAnhSanPham image = new HinhAnhSanPham();
+	                image.setUrlImage(filePath);
+	                image.setProduct(existingProduct);
+	                if (!isMainImageSet) {
+	                    image.setMain(true); // Đánh dấu ảnh đầu tiên là ảnh chính
+	                    isMainImageSet = true; // Đánh dấu đã thiết lập ảnh chính
+	                    System.out.println("Main image set: " + filePath);
+	                }
+	                existingImages.add(image); // Thêm vào collection hiện có
+	            }
+	        } else {
+	            System.out.println("No valid files found to upload.");
+	        }
+	    }
+
+	    // Nếu không có hình ảnh mới thì không xóa hình ảnh cũ
+	    System.out.println("Existing images after update: " + existingImages.size());
+
 	    // Lưu sản phẩm
 	    if (this.productService.update(existingProduct)) {
-	    	Integer productId = product.getId();
+	        Integer productId = product.getId();
 	        productService.setMainImageForProduct(productId);
+	        System.out.println("Product updated successfully, redirecting...");
 	        return "redirect:/admin/product?success=updated";
 	    }
+
+	    System.out.println("Failed to update product, redirecting...");
 	    return "redirect:/admin/product";
 	}
 

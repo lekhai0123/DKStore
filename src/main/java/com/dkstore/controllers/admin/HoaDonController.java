@@ -2,6 +2,7 @@ package com.dkstore.controllers.admin;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.dkstore.models.ChiTietGioHang;
 import com.dkstore.models.ChiTietHoaDon;
 import com.dkstore.models.HoaDon;
 import com.dkstore.models.Product;
@@ -22,6 +25,7 @@ import com.dkstore.models.User;
 import com.dkstore.services.ChiTietHoaDonService;
 import com.dkstore.services.HoaDonService;
 import com.dkstore.services.ProductService;
+import com.dkstore.services.SanPhamTonKhoService;
 import com.dkstore.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +42,8 @@ public class HoaDonController {
 	private ProductService productService;
 	@Autowired
 	private ChiTietHoaDonService chiTietHoaDonService;
+	@Autowired
+	private SanPhamTonKhoService sanPhamTonKhoService;
 	@GetMapping("/hoadon")
 	public String index(Model model, @RequestParam(defaultValue = "1") Integer pageNo,@Param("keyword") String keyword) {
 		Page<HoaDon> listHoadons= this.hoaDonService.getAll(pageNo);
@@ -63,29 +69,32 @@ public class HoaDonController {
 	@PostMapping("/add-hoadon")
 	public String save(HttpServletRequest request, @ModelAttribute HoaDon hoaDon) {
 	    String giabanList = request.getParameter("giabanList");
+	    String sizeList = request.getParameter("sizeList");
 	    String soluongList = request.getParameter("soluongList");
 	    String productIdList = request.getParameter("productIdList"); 
 	    String tongGiaList = request.getParameter("tongGiaList");
 
 	    int tongGia = 0;
 
-	    if (giabanList != null && soluongList != null && productIdList != null && tongGiaList != null) {
+	    if (giabanList != null && sizeList != null && soluongList != null && productIdList != null && tongGiaList != null) {
 	        String[] giabanStrings = giabanList.split(",");
+	        String[] sizeStrings = sizeList.split(",");
 	        String[] soluongStrings = soluongList.split(",");
 	        String[] productIdStrings = productIdList.split(","); 
 	        String[] tongGiaLists = tongGiaList.split(","); 
 
 	        for (int i = 0; i < giabanStrings.length; i++) {
-	            if (!giabanStrings[i].isEmpty() && !soluongStrings[i].isEmpty() && !productIdStrings[i].isEmpty() && !tongGiaLists[i].isEmpty()) {
+	            if (!giabanStrings[i].isEmpty() && !sizeStrings[i].isEmpty() && !soluongStrings[i].isEmpty() && !productIdStrings[i].isEmpty() && !tongGiaLists[i].isEmpty()) {
 	                try {
 	                    Float giaban = Float.valueOf(giabanStrings[i]);
+	                    Integer size = Integer.valueOf(sizeStrings[i]);
 	                    Integer soluong = Integer.valueOf(soluongStrings[i]);
 	                    Integer productId = Integer.valueOf(productIdStrings[i]);
 	                    Product product = productService.findById(productId);
 	                    Float tonggiasanpham = Float.valueOf(tongGiaLists[i]);
 
-	                    hoaDon.addDetail(giaban, soluong, product,tonggiasanpham);
-
+	                    hoaDon.addDetail(giaban,size, soluong, product,tonggiasanpham);
+	                    sanPhamTonKhoService.updateTonKho(size, productId,0,soluong);
 	                    tongGia += giaban.floatValue() * soluong.floatValue(); 
 	                } catch (NumberFormatException e) {
 	                    return "admin/hoadon/add"; 
@@ -98,7 +107,8 @@ public class HoaDonController {
 	    hoaDon.setTongtien((float) tongGia);
 	    hoaDon.setTrangthai(true);
 	    if (this.hoaDonService.create(hoaDon)) {
-	        for (ChiTietHoaDon chiTiet : hoaDon.getChiTietHoaDon()) {
+	    	List<ChiTietHoaDon> copyOfChiTietHoaDons = new ArrayList<>(hoaDon.getChiTietHoaDon());
+	        for (ChiTietHoaDon chiTiet : copyOfChiTietHoaDons) {
 	            chiTietHoaDonService.create(chiTiet);
 	        }
 	        return "redirect:/admin/hoadon"; 

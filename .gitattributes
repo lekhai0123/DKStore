@@ -1,2 +1,14 @@
+# Shell script uses LF
 /mvnw text eol=lf
+
+# CMD scripts use CRLF
 *.cmd text eol=crlf
+
+# JS files use LF
+*.js text eol=lf
+
+# CSS files use LF (thường cũng nên LF)
+*.css text eol=lf
+
+# Các file text khác auto
+* text=auto

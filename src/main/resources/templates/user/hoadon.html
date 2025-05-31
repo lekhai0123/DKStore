@@ -17,10 +17,6 @@
 <meta name="author" content="Themefisher">
 <meta name="generator" content="Themefisher Constra HTML Template v1.0">
 
-<!-- Favicon -->
-<link rel="shortcut icon" type="image/x-icon"
-	th:href="@{/fe/images/favicon.png}" />
-
 <!-- Themefisher Icon font -->
 <link rel="stylesheet"
 	th:href="@{/fe/plugins/themefisher-font/style.css}">
@@ -49,16 +45,25 @@
 	<!-- Main Menu Section -->
 	<div th:replace="~{/user/layout/menu :: menu}"></div>
 
+	<section class="page-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="content">
+						<h1 class="page-name">Hóa đơn</h1>
+						<ol class="breadcrumb">
+							<li><a href="index.html">Home</a></li>
+							<li class="active">Hóa đơn</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 	<section class="user-dashboard page-wrapper">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					<ul class="list-inline dashboard-menu text-center">
-						<li><a href="dashboard.html">Dashboard</a></li>
-						<li><a class="active" href="order.html">Orders</a></li>
-						<li><a href="address.html">Address</a></li>
-						<li><a href="profile-details.html">Profile Details</a></li>
-					</ul>
 					<div class="dashboard-wrapper user-dashboard">
 						<div id="hoaDonTable" class="table-responsive">
 							<table class="table">
@@ -87,7 +92,7 @@
 													        : 'Chưa xác định'}">
 										</span></td>
 										<td><button class="view-btn btn btn-default"
-												th:data-hoadon-id="${item.hoaDon.id}">View</button></td>
+												th:data-hoadon-id="${item.hoaDon.id}">Chi tiết</button></td>
 
 
 									</tr>

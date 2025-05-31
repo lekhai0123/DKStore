@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -43,8 +44,8 @@ public class User {
 	@Column(name = "telephone")
 	private String telephone;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GioHang> gioHangs = new ArrayList<>();
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private GioHang gioHangs;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<HoaDon> hoaDons = new ArrayList<>();
@@ -57,7 +58,7 @@ public class User {
 	}
 
 	public User(Integer id, String userName, String passWord, Boolean enabled, String fullName, String gender,
-			Date birthday, String address, String email, String telephone, List<GioHang> gioHangs, List<HoaDon> hoaDons,
+			Date birthday, String address, String email, String telephone, GioHang gioHangs, List<HoaDon> hoaDons,
 			Set<UserRole> userRoles) {
 		super();
 		this.id = id;
@@ -155,11 +156,11 @@ public class User {
 		this.telephone = telephone;
 	}
 
-	public List<GioHang> getGioHangs() {
+	public GioHang getGioHangs() {
 		return gioHangs;
 	}
 
-	public void setGioHangs(List<GioHang> gioHangs) {
+	public void setGioHangs(GioHang gioHangs) {
 		this.gioHangs = gioHangs;
 	}
 
@@ -178,5 +179,4 @@ public class User {
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
-	
 }

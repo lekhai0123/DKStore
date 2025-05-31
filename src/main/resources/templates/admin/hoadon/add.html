@@ -20,6 +20,7 @@
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
 	rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 </head>
 <body class="hold-transition skin-blue-light sidebar-mini">
 	<!-- Site wrapper -->
@@ -78,6 +79,12 @@
 									id="gia" placeholder="Nhập giá" name="giaban" readonly>
 							</div>
 							<div class="form-group">
+								<label>Kích cỡ</label> <select class="select2-selection"
+									id="sizeDropdown" style="width: 100%">
+									<option value="" disabled selected>Vui lòng chọn size</option>
+								</select>
+							</div>
+							<div class="form-group">
 								<label>Số lượng</label> <input type="text" class="form-control"
 									id="soluong" placeholder="Nhập số lượng" name="soluong" >
 							</div>
@@ -87,6 +94,7 @@
 								<thead>
 									<tr>
 										<th>Giá</th>
+										<th>Size</th>
 										<th>Số lượng</th>
 										<th>Tổng giá</th>
 										<th>Hành động</th>
@@ -99,12 +107,14 @@
 						</div>
 						<!-- /.box-body -->
 							<input type="hidden" id="giabanList" name="giabanList"> 
+							<input
+							type="hidden" id="sizeList" name="sizeList">
 							<input type="hidden" id="soluongList" name="soluongList">
 							<input type="hidden" id="productIdList" name="productIdList">
 							<input type="hidden" id="tongGiaList" name="tongGiaList">
 						<div class="box-footer">
-							<button type="submit" class="btn btn-primary">Submit</button>
-							<a class="btn btn-secondary" th:href="@{/admin/hoadon}">Back</a>
+							<button type="submit" class="btn btn-primary">Lưu</button>
+							<a class="btn btn-secondary" th:href="@{/admin/hoadon}">Trở lại</a>
 							<span class="pull-right"><strong>Tổng hoá đơn: </strong><span id="totalPrice">0</span>
 								<input type="hidden" id="tonggia" name="tonggia"></span>
 						</div>
@@ -130,6 +140,7 @@
 	<div th:replace="~{admin/layout/scripts :: scripts}"></div>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			$('.select2-selection').select2();
@@ -140,70 +151,135 @@
 		    });
 		});
 		let giabanList = [];
+		let sizeList = []; 
 		let soluongList = [];
 		let productIdList = [];
-		let tonggia = 0; // Khai báo biến tổng giá
+		let tonggia = 0; 
 		let tongGiaList = [];
 
-		$(document).on('click', '#addToList', function (e) { 
+		$(document).on('click', '#addToList', function(e) {
 		    e.preventDefault();
-		    
+
 		    var giaban = $.trim($("#gia").val());
+		    var size = $("#sizeDropdown").val();
 		    var soluong = $.trim($("#soluong").val());
 		    var productId = $("#productDropdown").val(); // Lấy giá trị ID sản phẩm
 
-		    if (giaban !== "" && soluong !== "" && productId !== null) {
+		    if (giaban !== "" && soluong !== "" && productId !== null && size !== null) {
+		        // Lấy thông tin tồn kho cho size đã chọn
+		        var sizeOption = $("#sizeDropdown option:selected");
+		        var tonKho = parseInt(sizeOption.data('tonkho')); // Giả sử mỗi option có thuộc tính data-tonkho
+
+		        // Tính tổng số lượng đã có trong danh sách
+		        var totalAddedQuantity = 0;
+		        $("tr", "#detailsTable tbody").each(function() {
+		            var rowSize = $(this).find("td:nth-child(2)").text(); // Lấy size từ cột thứ 2
+		            if (rowSize === size) {
+		                var rowQuantity = $(this).find("td:nth-child(3)").text(); // Lấy số lượng từ cột thứ 3
+		                totalAddedQuantity += parseInt(rowQuantity);
+		            }
+		        });
+
+		        // Kiểm tra số lượng nhập vào với tồn kho và số lượng đã thêm
+		        if (parseInt(soluong) + totalAddedQuantity > tonKho) {
+		            toastr.error("Số lượng nhập vào vượt quá số lượng tồn kho!"); // Hiển thị lỗi nếu số lượng vượt quá tồn kho
+		            return; // Dừng thêm vào danh sách nếu lỗi
+		        }
+
+		        // Nếu không vượt quá, thêm sản phẩm vào danh sách
 		        giabanList.push(giaban);
+		        sizeList.push(size);
 		        soluongList.push(soluong);
 		        productIdList.push(productId); // Thêm productId vào danh sách
-		        
+
 		        var tongGiaChoHang = parseInt(giaban) * parseInt(soluong);
 		        tonggia += tongGiaChoHang; // Cộng dồn vào tổng giá
 		        tongGiaList.push(tongGiaChoHang);
-		        
-		        var newRow = `<tr><td>${giaban}</td><td>${soluong}</td><td>${tongGiaChoHang}</td><td><a href="#" class="delete-product">Xóa</a></td></tr>`;
+
+		        var newRow = `<tr>
+		                        <td>${giaban}</td>
+		                        <td>${size}</td>
+		                        <td>${soluong}</td> <!-- Hiển thị size -->
+		                        <td>${tongGiaChoHang}</td>
+		                        <td><a href="#" class="delete-product">Xóa</a></td>
+		                      </tr>`;
 		        $("#detailsTable tbody").append(newRow);
 
 		        // Làm trống input sau khi thêm
 		        $("#soluong").val('');
-		        
+
 		        // Cập nhật tổng giá hiển thị
 		        $("#totalPrice").text(tonggia);
 		    }
 		});
 
+
 		// Trước khi gửi form, hãy gán giá trị cho các input ẩn
 		$("#formHoadon").submit(function() {
-		    $("#giabanList").val(giabanList.join(","));
-		    $("#soluongList").val(soluongList.join(","));
-		    $("#productIdList").val(productIdList.join(",")); // Gán productIdList vào input ẩn
-		    $("#tonggia").val(tonggia); // Gán tổng giá vào input ẩn
-		    $("#tongGiaList").val(tongGiaList.join(","));
-		    console.log("Giá bán:", giabanList);
-		    console.log("Số lượng:", soluongList);
-		    console.log("ID sản phẩm:", productIdList);
+			$("#giabanList").val(giabanList.join(","));
+			$("#sizeList").val(sizeList.join(","));
+			$("#soluongList").val(soluongList.join(","));
+			$("#productIdList").val(productIdList.join(",")); // Gán productIdList vào input ẩn
+			$("#tonggia").val(tonggia); // Gán tổng giá vào input ẩn
+			$("#tongGiaList").val(tongGiaList.join(","));
 		});
 
-		$(document).on('click', '.delete-product', function (e) {
-		    e.preventDefault();
-		    var row = $(this).closest('tr'); // Lấy hàng chứa nút xóa
-		    var gia = parseInt(row.find('td:nth-child(1)').text());
-		    var soluong = parseInt(row.find('td:nth-child(2)').text());
-		    var tongGiaChoHang = gia * soluong;
+		$(document).on('click', '.delete-product', function(e) {
+			e.preventDefault();
+			var row = $(this).closest('tr'); // Lấy hàng chứa nút xóa
+			var gia = parseInt(row.find('td:nth-child(1)').text());
+			var size = row.find('td:nth-child(2)').text();
+			var soluong = parseInt(row.find('td:nth-child(3)').text());
+			var tongGiaChoHang = gia * soluong;
 
-		    // Cập nhật tổng giá
-		    tonggia -= tongGiaChoHang; 
-		    $("#totalPrice").text(tonggia); // Cập nhật lại tổng giá hiển thị
+			// Cập nhật tổng giá
+			tonggia -= tongGiaChoHang;
+			$("#totalPrice").text(tonggia); // Cập nhật lại tổng giá hiển thị
 
-		 // Xóa hàng
-	        var index = row.index();
-	        row.remove();
+			// Xóa hàng
+			var index = row.index();
+			row.remove();
 
-	        // Xóa giá trị tại vị trí index khỏi các danh sách
-	        giabanList.splice(index, 1);
-	        soluongList.splice(index, 1);
-	        productIdList.splice(index, 1);
-	        tongGiaList.splice(index, 1); // Xóa tổng giá của sản phẩm
+			// Xóa giá trị tại vị trí index khỏi các danh sách
+			giabanList.splice(index, 1);
+			sizeList.splice(index, 1);
+			soluongList.splice(index, 1);
+			productIdList.splice(index, 1);
+			tongGiaList.splice(index, 1); // Xóa tổng giá của sản phẩm
+		}); 
+		document.addEventListener("DOMContentLoaded", function () {
+		    const productDropdown = $("#productDropdown"); 
+		    productDropdown.on("select2:select", function (e) {
+		        const productId = e.params.data.id;
+		        const sizeDropdown = document.getElementById("sizeDropdown");
+		        sizeDropdown.innerHTML = '<option value="" disabled selected>Vui lòng chọn size</option>';
+		        // Kiểm tra ID sản phẩm hợp lệ
+		        if (productId) {
+		            fetch(`/admin/${productId}/size`)
+		                .then(response => {
+		                    if (!response.ok) {
+		                        throw new Error(`HTTP error! Status: ${response.status}`);
+		                    }
+		                    return response.json();
+		                })
+		                .then(data => {
+		                    if (data.length === 0) {
+		                        sizeDropdown.innerHTML = '<option value="" disabled>No sizes available</option>';
+		                        return;
+		                    }
+		                    data.forEach(item => {
+		                        const option = document.createElement("option");
+		                        option.value = item.size;
+		                        option.textContent = `Size ${item.size} (Tồn kho: ${item.tonkho})`;
+		                        option.setAttribute('data-tonkho', item.tonkho); // Đảm bảo thêm data-tonkho
+		                        sizeDropdown.appendChild(option);
+		                    });
+		                })
+		                .catch(error => console.error("Error fetching sizes:", error));
+		        } else {
+		            console.log("No product ID selected.");
+		        }
+		    });
 		});
 
 	</script>

@@ -84,5 +84,10 @@
 			});
 		}
 	});
+	// changeTitle.js
+	document.addEventListener("DOMContentLoaded", function() {
+	    document.title = "DKStore | Trang quản trị";  // Tiêu đề mới mà bạn muốn thay thế
+	});
+
 
 }(jQuery));

@@ -15,5 +15,4 @@ public interface GioHangService {
 	Page<GioHang> getAll(Integer pageNo);
 	List<GioHang> search(String keyword);
 	Page<GioHang> search(String keyword, Integer pageNo);
-	String getMiniGioHang();
 }

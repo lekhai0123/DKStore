@@ -11,6 +11,9 @@ public class ChiTietHoaDon {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "size")
+	private Integer size;
+    
     @Column(name = "soluong")
     private Integer soluong;
 
@@ -30,11 +33,22 @@ public class ChiTietHoaDon {
 
     public ChiTietHoaDon() {
         super();
-    }
+    }   
 
-    public ChiTietHoaDon(Integer id, Integer soluong, Float gia,Float tonggiasanpham, HoaDon hoadon, Product product) {
+    public ChiTietHoaDon(Integer id, Integer size, Integer soluong, Float gia, Float tonggiasanpham, HoaDon hoadon,
+			Product product) {
+		super();
+		this.id = id;
+		this.size = size;
+		this.soluong = soluong;
+		this.gia = gia;
+		this.tonggiasanpham = tonggiasanpham;
+		this.hoadon = hoadon;
+		this.product = product;
+	}
+
+	public ChiTietHoaDon(Integer soluong, Float gia,Float tonggiasanpham, HoaDon hoadon, Product product) {
         super();
-        this.id = id;
         this.soluong = soluong;
         this.gia = gia;
         this.tonggiasanpham = tonggiasanpham;
@@ -42,40 +56,39 @@ public class ChiTietHoaDon {
         this.product = product;
     }
 
-    public ChiTietHoaDon(Integer soluong, Float gia,Float tonggiasanpham, HoaDon hoadon, Product product) {
-        super();
-        this.soluong = soluong;
-        this.gia = gia;
-        this.tonggiasanpham = tonggiasanpham;
-        this.hoadon = hoadon;
-        this.product = product;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getSize() {
+		return size;
+	}
 
-    public Integer getSoluong() {
-        return soluong;
-    }
+	public void setSize(Integer size) {
+		this.size = size;
+	}
 
-    public void setSoluong(Integer soluong) {
-        this.soluong = soluong;
-    }
+	public Integer getSoluong() {
+		return soluong;
+	}
 
-    public Float getGia() {
-        return gia;
-    }
+	public void setSoluong(Integer soluong) {
+		this.soluong = soluong;
+	}
 
-    public void setGia(Float gia) {
-        this.gia = gia;
-    }
+	public Float getGia() {
+		return gia;
+	}
 
-    public Float getTonggiasanpham() {
+	public void setGia(Float gia) {
+		this.gia = gia;
+	}
+
+	public Float getTonggiasanpham() {
 		return tonggiasanpham;
 	}
 
@@ -84,18 +97,18 @@ public class ChiTietHoaDon {
 	}
 
 	public HoaDon getHoadon() {
-        return hoadon;
-    }
+		return hoadon;
+	}
 
-    public void setHoadon(HoaDon hoadon) {
-        this.hoadon = hoadon;
-    }
+	public void setHoadon(HoaDon hoadon) {
+		this.hoadon = hoadon;
+	}
 
-    public Product getProduct() {
-        return product; // Đổi kiểu trả về thành Product
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public void setProduct(Product product) { // Thay đổi kiểu tham số thành Product
-        this.product = product;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 }

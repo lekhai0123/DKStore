@@ -36,13 +36,8 @@
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					Blank page <small>it all starts here</small>
+					Quản lý hoá đơn
 				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li><a href="#">Examples</a></li>
-					<li class="active">Blank page</li>
-				</ol>
 			</section>
 
 			<!-- Main content -->
@@ -52,7 +47,7 @@
 						<div class="col-md-12">
 							<div class="box">
 								<div class="box-header">
-									<h3 class="box-title">Bordered Table</h3>
+									<h3 class="box-title">Bảng hoá đơn</h3>
 									<div class="box-tools">
 										<form>
 											<div class="input-group input-group-sm hidden-xs"
@@ -72,7 +67,7 @@
 								<!-- /.box-header -->
 								<div class="box-body ">
 								<span > <a class="btn btn-success"
-										th:href="@{/admin/add-hoadon}">Add new category</a>
+										th:href="@{/admin/add-hoadon}">Thêm mới hoá đơn</a>
 									</span>
 									<div class="table-responsive">
 										<table class="table table-bordered">
@@ -103,11 +98,11 @@
 													</td>
 													<td><a class="btn btn-info"
 														th:href="@{/admin/detail-hoadon/{id}(id=${hoadon.id})}">
-															Detail </a> <a class="btn btn-warning"
-														th:href="@{/admin/edit-hoadon/{id}(id=${hoadon.id})}">Edit</a>
+															Chi tiết</a> <a class="btn btn-warning"
+														th:href="@{/admin/edit-hoadon/{id}(id=${hoadon.id})}">Sửa</a>
 														<a class="btn btn-danger"
 														th:href="@{/admin/delete-hoadon/{id}(id=${hoadon.id})}"
-														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Delete</a></td>
+														onclick="return confirm('Bạn có chắc muốn xoá danh mục này?')">Xoá</a></td>
 												</tr>
 											</tbody>
 										</table>

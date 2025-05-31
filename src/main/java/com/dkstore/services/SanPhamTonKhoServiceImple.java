@@ -93,7 +93,7 @@ public class SanPhamTonKhoServiceImple implements SanPhamTonKhoService{
 	}
 	@Override
 	@Transactional
-	public void updateTonKho(Integer size, Integer productId, Integer oldSoLuong, Integer newSoLuong) {
+	public Integer updateTonKho(Integer size, Integer productId, Integer oldSoLuong, Integer newSoLuong) {
 	    // Bước 1: Tính chênh lệch giữa số lượng cũ và mới
 	    int chenhLechSoLuong = newSoLuong - (oldSoLuong == null ? 0 : oldSoLuong);
 
@@ -105,16 +105,18 @@ public class SanPhamTonKhoServiceImple implements SanPhamTonKhoService{
 	        // Bước 3: Cập nhật tồn kho
 	        Integer newTonKho = tonKho.getTonkho() - chenhLechSoLuong;
 	        if (newTonKho < 0) {
-	            throw new IllegalArgumentException("Số lượng tồn kho không đủ!");
+	            return 1; // Số lượng tồn kho không đủ
 	        }
 	        tonKho.setTonkho(newTonKho);
 
 	        // Lưu thay đổi
 	        sanPhamTonKhoRepository.save(tonKho);
+	        return 0; // Thành công
 	    } else {
-	        throw new EntityNotFoundException("Không tìm thấy sản phẩm tồn kho với size và product chỉ định.");
+	        return 2; // Không tìm thấy sản phẩm tồn kho
 	    }
 	}
+
 
 	@Override
 	public Boolean deleteGioHangAndUpdateTonKho(Integer gioHangId) {
