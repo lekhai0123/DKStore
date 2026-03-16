@@ -30,10 +30,10 @@ public class Product {
 	private String description;
 	@Column(name = "price")
 	private Float price;
-	@Column(name = "mainImage")
+	@Column(name = "main_image")
 	private String mainImage;
 	@ManyToOne
-	@JoinColumn(name = "brandId",referencedColumnName = "id")
+	@JoinColumn(name = "brand_id",referencedColumnName = "id")
 	private Brand brand;
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChiTietGioHang> chiTietGioHangs = new HashSet<>();	

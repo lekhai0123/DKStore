@@ -129,9 +129,21 @@ public class ProductServiceImple implements ProductService {
     }
 
 	@Override
-	public Page<Product> searchAndFilter(String keyword, List<String> brands, Integer pageNo) {
-		// TODO Auto-generated method stub
-		 Pageable pageable = PageRequest.of(pageNo - 1, 9); // Giới hạn 9 sản phẩm trên mỗi trang
-	        return productRepository.findByKeywordAndBrands(keyword, brands, pageable);
-	}
+public Page<Product> searchAndFilter(String keyword, List<String> brands, Integer pageNo) {
+
+    if (keyword != null) {
+        keyword = keyword.trim();
+        if (keyword.isEmpty()) {
+            keyword = null;
+        }
+    }
+
+    if (brands != null && brands.isEmpty()) {
+        brands = null;
+    }
+
+    Pageable pageable = PageRequest.of(pageNo - 1, 9);
+
+    return productRepository.findByKeywordAndBrands(keyword, brands, pageable);
+}
 }

@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.dkstore.models.HoaDon;
 import com.dkstore.models.User;
 
-public interface HoaDonRepository extends JpaRepository<HoaDon, Integer>{
-	@Query("Select h FROM HoaDon h JOIN h.user u WHERE u.userName LIKE %?1%")
-	List<HoaDon> search(String keyword);	
-	List<HoaDon> findByUser(User user);
+public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
+    @Query("SELECT h FROM HoaDon h JOIN h.user u WHERE LOWER(u.userName) LIKE LOWER(CONCAT('%', ?1, '%'))")
+    List<HoaDon> search(String keyword);
+
+    List<HoaDon> findByUser(User user);
 }
