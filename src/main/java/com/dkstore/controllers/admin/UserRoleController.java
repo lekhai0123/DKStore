@@ -49,7 +49,7 @@ public class UserRoleController {
 		    // Xử lý trường hợp không tìm thấy User, ví dụ gán null hoặc thông báo lỗi
 		    userRole.setUser(null); // Hoặc xử lý khác tùy theo yêu cầu
 		}
-		Optional<Role> roleOptional = this.roleRepository.findById(role);
+		Optional<Role> roleOptional = this.roleRepository.findById(Long.valueOf(role));
 		if (roleOptional.isPresent()) {
 			userRole.setRole(roleOptional.get());  // Nếu có giá trị, lấy User và gọi setUser
 		} else {
