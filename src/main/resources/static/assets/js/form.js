@@ -53,9 +53,13 @@
 
         // Hàm kiểm tra email hợp lệ
         function isValidEmail(email) {
-            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-            return emailRegex.test(email);
-        }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const result = emailRegex.test(email);
+    console.log("isValidEmail input =", email);
+    console.log("isValidEmail regex =", emailRegex);
+    console.log("isValidEmail result =", result);
+    return result;
+}
 
         // Hàm kiểm tra mật khẩu hợp lệ (ít nhất 8 ký tự và chứa ít nhất 1 ký tự in hoa)
         function isValidPassword(password) {
@@ -70,68 +74,103 @@
 
             // Nếu đang ở bước đầu tiên, kiểm tra userName và email
 			if (currentStep === 1) {
-			    var userName = $("input[name='userName']").val(); // Lấy giá trị userName
-			    var email = $("input[name='email']").val(); // Lấy giá trị email
-			    var isValid = true;
+    var emailInputs = currentStepElement.find("input[name='email']");
+    var userNameInputs = currentStepElement.find("input[name='userName']");
+    var userName = userNameInputs.val();
+    var email = emailInputs.val();
 
-			    // Kiểm tra tính hợp lệ của email
-			    if (!isValidEmail(email)) {
-			        toastr.error("Email không hợp lệ!");
-			        isValid = false;
-			    }
+    console.log("currentStep =", currentStep);
+    console.log("currentStepElement =", currentStepElement);
+    console.log("emailInputs.length =", emailInputs.length);
+    console.log("userNameInputs.length =", userNameInputs.length);
+    console.log("raw userName =", userName);
+    console.log("raw email =", email);
+    console.log("typeof email =", typeof email);
 
-			    // Gửi AJAX kiểm tra username có tồn tại không
-			    $.ajax({
-			        url: '/check-username', // Đường dẫn kiểm tra userName
-			        method: 'POST',
-			        data: { userName: userName },
-			        success: function(response) {
-			            if (response === 'username_exists') {
-			                toastr.error("Username đã tồn tại!");
-			                showStep(1); // Quay lại bước đầu tiên để sửa userName
-			            } else {
-			                // Tiếp tục kiểm tra email nếu username hợp lệ
-			                $.ajax({
-			                    url: '/check-email', // Đường dẫn kiểm tra email
-			                    method: 'POST',
-			                    data: { email: email },
-			                    success: function(response) {
-			                        if (response === 'email_exists') {
-			                            toastr.error("Email đã tồn tại!");
-			                            showStep(1); // Quay lại bước đầu tiên để sửa email
-			                        } else {
-			                            // Nếu cả username và email hợp lệ, kiểm tra các input ở bước hiện tại
-			                            if (isValid) {
-			                                currentStepElement.find('.form-input').each(function() {
-			                                    if ($(this).val() === '') {
-			                                        isValid = false;
-			                                        $(this).next('label').addClass('error').removeClass('active');
-			                                    } else {
-			                                        $(this).next('label').removeClass('error').addClass('active');
-			                                    }
-			                                });
+    if (email != null) {
+        email = email.trim();
+    } else {
+        email = "";
+    }
 
-			                                if (isValid) {
-			                                    if (currentStep < 4) { // Kiểm tra để đảm bảo không vượt quá số bước
-			                                        showStep(currentStep + 1);
-			                                    }
-			                                } else {
-			                                    toastr.error("Vui lòng điền đủ thông tin!");
-			                                }
-			                            }
-			                        }
-			                    },
-			                    error: function() {
-			                        toastr.error("Có lỗi xảy ra khi kiểm tra email! Vui lòng thử lại.");
-			                    }
-			                });
-			            }
-			        },
-			        error: function() {
-			            toastr.error("Có lỗi xảy ra khi kiểm tra username! Vui lòng thử lại.");
-			        }
-			    });
-			}
+    if (userName != null) {
+        userName = userName.trim();
+    } else {
+        userName = "";
+    }
+
+    console.log("trimmed userName =", userName);
+    console.log("trimmed email =", email);
+    console.log("email length =", email.length);
+    console.log("email chars =", Array.from(email));
+    console.log("isValidEmail(email) =", isValidEmail(email));
+
+    var isValid = true;
+
+    if (!isValidEmail(email)) {
+        toastr.error("Email không hợp lệ!");
+        isValid = false;
+        return;
+    }
+
+    $.ajax({
+        url: '/check-username',
+        method: 'POST',
+        data: { userName: userName },
+        success: function(response) {
+            console.log("check-username response =", response);
+            if (response === 'username_exists') {
+                toastr.error("Username đã tồn tại!");
+                showStep(1);
+            } else {
+                $.ajax({
+                    url: '/check-email',
+                    method: 'POST',
+                    data: { email: email },
+                    success: function(response) {
+                        console.log("check-email response =", response);
+                        if (response === 'email_exists') {
+                            toastr.error("Email đã tồn tại!");
+                            showStep(1);
+                        } else {
+                            if (isValid) {
+                                currentStepElement.find('.form-input').each(function() {
+                                    console.log("checking input name =", $(this).attr("name"), "value =", $(this).val());
+                                    if ($(this).val() === '') {
+                                        isValid = false;
+                                        $(this).next('label').addClass('error').removeClass('active');
+                                    } else {
+                                        $(this).next('label').removeClass('error').addClass('active');
+                                    }
+                                });
+
+                                if (isValid) {
+                                    if (currentStep < 4) {
+                                        showStep(currentStep + 1);
+                                    }
+                                } else {
+                                    toastr.error("Vui lòng điền đủ thông tin!");
+                                }
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("check-email error xhr =", xhr);
+                        console.log("check-email error status =", status);
+                        console.log("check-email error error =", error);
+                        toastr.error("Có lỗi xảy ra khi kiểm tra email! Vui lòng thử lại.");
+                    }
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log("check-username error xhr =", xhr);
+            console.log("check-username error status =", status);
+            console.log("check-username error error =", error);
+            toastr.error("Có lỗi xảy ra khi kiểm tra username! Vui lòng thử lại.");
+        }
+    });
+}
 			else if (currentStep === 2) {  // Bước kiểm tra mật khẩu
 			    var password = $("input[name='passWord']").val(); // Lấy giá trị password
 			    var rePassword = $("input[name='re-passWord']").val(); // Lấy giá trị re-enter password

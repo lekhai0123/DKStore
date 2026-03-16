@@ -57,9 +57,7 @@ public class BrandController {
 
 	@PostMapping("/add-brand")
 	public String save(@ModelAttribute Brand brand, @RequestParam("logo_url1") MultipartFile file) {
-		this.storageService.store(file);
-		String fileName = file.getOriginalFilename();
-		String filePath = "/uploads/" + fileName;
+		String filePath = this.storageService.store(file);
 		brand.setLogo_url(filePath);
 		if (this.brandService.create(brand)) {
 			return "redirect:/admin/brand";
@@ -79,45 +77,27 @@ public class BrandController {
 	@PostMapping("/edit-brand")
 	public String update(@ModelAttribute Brand brand, @RequestParam("logo_url1") MultipartFile file) {
 		Brand existBrand = this.brandService.findById(brand.getId());
-		if (!file.isEmpty()) {
-			String oldFilePath = existBrand.getLogo_url();
-			Path oldFile = Paths.get("src/main/resources/static" + oldFilePath);
-			if (Files.exists(oldFile)) {
-				try {
-					Files.deleteIfExists(oldFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.out.println("File không tồn tại");
-			}
-			this.storageService.store(file);
-			String fileName = file.getOriginalFilename();
-			String filePath = "/uploads/" + fileName;
+		if (existBrand == null) {
+			return "redirect:/admin/brand";
+		}
+
+		if (file != null && !file.isEmpty()) {
+			String filePath = this.storageService.store(file);
 			brand.setLogo_url(filePath);
 		} else {
 			brand.setLogo_url(existBrand.getLogo_url());
 		}
+
 		if (this.brandService.update(brand)) {
 			return "redirect:/admin/brand";
-		} else {
-			return "admin/brand/edit";
 		}
+		return "admin/brand/edit";
 	}
 
 	@GetMapping("/delete-brand/{id}")
 	public String delete(@PathVariable Integer id) {
 		Brand existBrand = this.brandService.findById(id);
 		if (existBrand != null) {
-			String imagePath = existBrand.getLogo_url();
-			Path imageFile = Paths.get("src/main/resources/static" + imagePath);
-			try {
-				if (Files.exists(imageFile)) {
-					Files.delete(imageFile);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 			if (this.brandService.delete(id)) {
 				return "redirect:/admin/brand";
 			}
