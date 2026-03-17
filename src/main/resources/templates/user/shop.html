@@ -114,7 +114,8 @@
 									<span class="bage">Sale</span>
 									<!-- Load URL ảnh từ DB -->
 									<img class="img-responsive"
-										th:src="@{${product.item.mainImage}}" alt="product-img" />
+										th:src="${product.item.mainImage != null ? product.item.mainImage : '/fe/images/default.jpg'}"
+										alt="product-img" />
 									<div class="preview-meta">
 										<ul>
 											<li><span data-toggle="modal"

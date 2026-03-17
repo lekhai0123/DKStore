@@ -27,14 +27,24 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         JOIN p.brand b
         WHERE (
             :keyword IS NULL
-            OR TRIM(:keyword) = ''
-            OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%'))
-            OR LOWER(b.name) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%'))
+            OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         )
-        AND (
-            :brands IS NULL
-            OR b.name IN :brands
+    """)
+    Page<Product> findByKeyword(
+            @Param("keyword") String keyword,
+            Pageable pageable);
+
+    @Query("""
+        SELECT p
+        FROM Product p
+        JOIN p.brand b
+        WHERE (
+            :keyword IS NULL
+            OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         )
+        AND b.name IN :brands
     """)
     Page<Product> findByKeywordAndBrands(
             @Param("keyword") String keyword,
