@@ -131,18 +131,22 @@ public class ProductServiceImple implements ProductService {
 	@Override
 public Page<Product> searchAndFilter(String keyword, List<String> brands, Integer pageNo) {
     if (keyword != null) {
-        keyword = keyword.trim();
+        keyword = keyword.trim().toLowerCase();
         if (keyword.isEmpty()) {
             keyword = null;
         }
     }
 
-    Pageable pageable = PageRequest.of(pageNo - 1, 9);
-
-    if (brands == null || brands.isEmpty()) {
-        return productRepository.findByKeyword(keyword, pageable);
+    if (brands != null && brands.isEmpty()) {
+        brands = null;
     }
 
-    return productRepository.findByKeywordAndBrands(keyword, brands, pageable);
+    Pageable pageable = PageRequest.of(pageNo - 1, 9);
+
+    if (brands == null) {
+        return productRepository.findByKeywordNative(keyword, pageable);
+    }
+
+    return productRepository.findByKeywordAndBrandsNative(keyword, brands, pageable);
 }
 }
