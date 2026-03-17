@@ -88,7 +88,7 @@
 												style="width: 90%; margin: 10px" placeholder="Search...">
 										</div>
 										<ul>
-											<li th:each="item : ${listBrands}"><input
+											<li th:each="item : ${listBrands != null ? listBrands : {}}"><input
 												type="checkbox" name="brand" th:value="${item.name}"
 												style="margin-left: 8px;" /> <span th:text="${item.name}"
 												style="padding-left: 5px;"></span></li>
@@ -128,8 +128,7 @@
 								</div>
 								<div class="product-content">
 									<h4>
-										<a th:href="'/shop/'+${product.item.id}"><span
-											th:text="${product.item.brand.name}"></span> <span
+										<a th:href="'/shop/'+${product.item.id}"><span th:text="${product.item.brand != null ? product.item.brand.name : 'No Brand'}"></span> <span
 											th:text="${product.item.name}"></span></a>
 									</h4>
 									<p class="price" th:text="${product.gia}"></p>
@@ -154,8 +153,7 @@
 												<div class="col-md-8 col-sm-6 col-xs-12">
 													<div class="modal-image">
 														<!-- Tải ảnh sản phẩm từ DB nếu có -->
-														<img class="img-responsive"
-															th:src="@{${product.item.mainImage}}" alt="product-img" />
+														<img class="img-responsive" th:src="${product.item.mainImage != null ? product.item.mainImage : '/fe/images/default.png'}" alt="product-img" />
 													</div>
 												</div>
 												<div class="col-md-4 col-sm-6 col-xs-12">
@@ -180,7 +178,8 @@
 						<ul class="pagination pagination-sm m-0"
 							style="display: flex; justify-content: center;">
 							<!-- Previous page link -->
-							<li th:if="${productPage.hasPrevious()}" class="page-item">
+							 <div class="box-footer clearfix" th:if="${productPage != null}">
+								<li th:if="${productPage.hasPrevious()}" class="page-item">
 								<a class="page-link"
 								th:href="@{/shop(pageNo=${productPage.number})}">«</a>
 							</li>
@@ -193,7 +192,9 @@
 							<li th:if="${productPage.hasNext()}" class="page-item"><a
 								class="page-link"
 								th:href="@{/shop(pageNo=${productPage.number + 2})}">»</a></li>
-						</ul>
+						
+							 </div>
+							</ul>
 					</div>
 				</div>
 
