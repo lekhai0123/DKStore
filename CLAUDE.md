@@ -145,6 +145,12 @@ này tạo thêm trang danh sách/phân trang mới, tránh lặp lại 2 lỗi 
   `application.properties` ở bản hiện tại nhưng vẫn đọc được nếu xem git log). Vì vẫn
   giữ nguyên tài khoản Cloudinary/Gmail, nên khuyến nghị user rotate 2 secret này —
   đã ghi trong `DEPLOY.md`, chưa tự làm vì cần thao tác trên dashboard bên ngoài.
+- GitHub secret scanning từng phát hiện 1 **Google Maps API key**
+  (`AIzaSyCC72...`) bị commit vào `user/shop.html` ở bản cũ (alert mở 6/12/2024) —
+  đã kiểm tra: key **không còn xuất hiện trong code hiện tại** (đã grep toàn repo,
+  0 kết quả) vì trang map đã đổi sang Leaflet + OpenStreetMap từ trước, không cần
+  API key nữa. Không cần sửa code, chỉ cần user tự thu hồi key đó trên Google Cloud
+  Console vì vẫn đọc được trong lịch sử git.
 - CSRF bị tắt toàn cục trong `SecurityConfig` — chưa sửa, ngoài phạm vi các task deploy
   đã làm.
 - `DataSeeder` luôn seed 2 tài khoản mặc định mật khẩu `123456` — `DEPLOY.md` đã nhắc

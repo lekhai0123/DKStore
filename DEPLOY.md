@@ -149,5 +149,12 @@ Các bước bật:
   nguyên tài khoản Cloudinary/Gmail, bạn nên **đổi (rotate) Cloudinary API secret và
   mật khẩu ứng dụng Gmail** trên dashboard tương ứng, rồi cập nhật lại vào `.env` trên
   server — không liên quan gì tới code, làm khi nào tiện.
+- Ngoài ra GitHub secret scanning từng phát hiện 1 **Google Maps API key**
+  (`AIzaSyCC72...`, alert mở từ 6/12/2024) từng bị commit vào `user/shop.html` ở một
+  bản cũ. Key này **không còn được dùng trong code hiện tại** (trang đã đổi sang
+  Leaflet + OpenStreetMap, không cần API key), nên không cần sửa code — nhưng key vẫn
+  còn đọc được trong lịch sử git, nên vào Google Cloud Console **xoá/thu hồi hẳn key
+  đó** để tránh bị người khác lợi dụng gọi API tính phí vào tài khoản Google Cloud
+  của bạn.
 - Nếu muốn dữ liệu Postgres không mất khi chạy `docker compose down`, không thêm
   `-v` vào lệnh đó (`-v` sẽ xoá luôn volume `pgdata`).
