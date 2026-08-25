@@ -34,5 +34,15 @@ services:
     depends_on:
       - app
 
+  webhook:
+    build: ./deploy/webhook
+    restart: unless-stopped
+    environment:
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      HOST_REPO_PATH: ${HOST_REPO_PATH}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/repo
+
 volumes:
   pgdata:

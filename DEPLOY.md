@@ -90,6 +90,57 @@ git pull
 docker compose up -d --build   # chỉ rebuild lại image app, dữ liệu DB trong volume không mất
 ```
 
+## 7. (Tuỳ chọn) Auto-deploy khi push code mới lên GitHub
+
+Có sẵn 1 service `webhook` trong `docker-compose.yml`: GitHub gọi vào ngay khi push,
+service này tự `git pull` + rebuild lại `app` — không cần tự tay SSH vào pull nữa.
+
+**Đánh đổi cần biết trước khi bật:** service này cần quyền điều khiển Docker daemon
+của server (`/var/run/docker.sock`) để tự rebuild — tương đương quyền root trên toàn
+server. Được bảo vệ bằng chữ ký HMAC (secret riêng, GitHub và server dùng chung), chỉ
+deploy khi push đúng nhánh `master`, nhưng nếu `WEBHOOK_SECRET` bị lộ thì ai cũng kích
+được lệnh deploy. Nếu không cần deploy tức thì, cứ tiếp tục `git pull` thủ công như
+bước 6, bỏ qua phần này cũng không sao — `webhook` không bật thì không ảnh hưởng gì
+tới `app`/`db`/`cloudflared`.
+
+**Giới hạn quan trọng:** webhook chỉ tự rebuild service `app`. Nếu bạn sửa
+`docker-compose.yml`, `.env`, hoặc chính code trong `deploy/webhook/`, vẫn phải tự tay
+chạy `docker compose up -d --build` (không kèm tên service) trên server một lần.
+
+Các bước bật:
+
+1. Trong `.env`, điền:
+   - `HOST_REPO_PATH`: đường dẫn tuyệt đối tới thư mục chứa `docker-compose.yml` trên
+     server (xem bằng lệnh `pwd` khi đang đứng trong thư mục đó, ví dụ
+     `/data/uploads/khai/project/DKStore`). **Phải đúng tuyệt đối**, vì lệnh rebuild
+     bên trong container `webhook` chạy qua Docker socket của server, cần biết đường
+     dẫn thật trên server chứ không phải đường dẫn `/repo` bên trong container.
+   - `WEBHOOK_SECRET`: sinh chuỗi ngẫu nhiên bằng `openssl rand -hex 32`, dán vào đây.
+
+2. Thêm Public Hostname mới trong Cloudflare Tunnel (giống bước 2, cùng 1 tunnel):
+   - Subdomain: vd `deploy`
+   - Domain: `ltk.id.vn` (chọn từ dropdown)
+   - Service: `HTTP` → `webhook:9000`
+
+3. Khởi động service `webhook` (chỉ cần 1 lần, hoặc mỗi khi sửa code webhook):
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. Trên GitHub: vào repo → **Settings → Webhooks → Add webhook**:
+   - Payload URL: `https://deploy.ltk.id.vn/webhook`
+   - Content type: `application/json`
+   - Secret: đúng giá trị `WEBHOOK_SECRET` ở bước 1
+   - Chọn "Just the push event"
+
+5. Test: push 1 commit lên `master`, xem log:
+   ```bash
+   docker compose logs -f webhook
+   ```
+   Phải thấy `[deploy] git pull...` rồi `[deploy] docker compose up -d --build app...`.
+   Nếu không thấy gì, vào tab **Recent Deliveries** của webhook trên GitHub xem response
+   code (401 = sai secret, không thấy request nào = Cloudflare route chưa đúng).
+
 ## Lưu ý bảo mật quan trọng
 
 - Repo GitHub này đang **public** và trước đây từng commit thẳng mật khẩu DB Render,

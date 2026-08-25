@@ -3,6 +3,10 @@ target/
 
 ### Env secrets ###
 .env
+
+### Python (deploy/webhook) ###
+__pycache__/
+*.pyc
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

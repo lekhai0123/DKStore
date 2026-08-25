@@ -49,9 +49,12 @@ Render; dự án đang chuyển sang tự host trên server riêng của chủ d
   `http://localhost:10000`) dùng để build link xác thực email/reset password, set qua
   `APP_BASE_URL`.
 - `docker-compose.yml`, `.env.example`, `.dockerignore`, `DEPLOY.md`: bộ file phục vụ
-  tự deploy — `docker-compose.yml` chạy 3 service (`db` = Postgres, `app` = build từ
-  `Dockerfile` có sẵn, `cloudflared` = Cloudflare Tunnel, không cần mở port trên
-  router/firewall). `.env` (thật, không commit) tạo từ `.env.example` trên server.
+  tự deploy — `docker-compose.yml` chạy 4 service: `db` (Postgres), `app` (build từ
+  `Dockerfile` có sẵn), `cloudflared` (Cloudflare Tunnel, không cần mở port trên
+  router/firewall), `webhook` (tuỳ chọn — nhận webhook GitHub push, tự `git pull` +
+  rebuild `app`, code ở `deploy/webhook/app.py`, cần mount Docker socket nên có quyền
+  tương đương root trên server, bảo vệ bằng HMAC secret `WEBHOOK_SECRET`). `.env`
+  (thật, không commit) tạo từ `.env.example` trên server.
 
 ## Thuật ngữ tiếng Việt trong domain model
 - `GioHang` = giỏ hàng (Cart), `ChiTietGioHang` = dòng chi tiết giỏ hàng.
