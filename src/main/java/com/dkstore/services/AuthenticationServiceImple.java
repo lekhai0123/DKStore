@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,8 +31,11 @@ public class AuthenticationServiceImple implements AuthenticationService{
     private JavaMailSender mailSender;
     
     @Autowired
-    private RoleRepository roleRepository; 
-    
+    private RoleRepository roleRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public String registerUser(User user) {
         // Lưu người dùng với trạng thái chưa được kích hoạt (isEnabled = false)
         user.setEnabled(false); // Chưa xác thực email
@@ -59,7 +63,7 @@ public class AuthenticationServiceImple implements AuthenticationService{
     }
     private void sendConfirmationEmail(User user, String token) {
         String subject = "Xác thực tài khoản của bạn";
-        String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
+        String confirmationUrl = baseUrl + "/confirm?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
@@ -103,7 +107,7 @@ public class AuthenticationServiceImple implements AuthenticationService{
 
     private void sendResetPasswordEmail(User user, String token) {
         String subject = "Khôi phục mật khẩu của bạn";
-        String resetPasswordUrl = "http://localhost:8080/reset-password?token=" + token;
+        String resetPasswordUrl = baseUrl + "/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());

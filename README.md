@@ -24,7 +24,15 @@ DKStore là một ứng dụng quản lý cửa hàng trực tuyến (e-commerce
    git clone https://github.com/lekhai0123/DKStore.git
    cd DKStore
    ```
-2. Chạy bằng Maven:
+2. Khai báo biến môi trường (không còn giá trị mặc định hardcode trong
+   `application.properties` vì lý do bảo mật): copy `.env.example` thành `.env`,
+   điền thông tin DB Postgres/Cloudinary/Gmail thật, rồi export ra shell trước khi
+   chạy Maven, ví dụ:
+   ```bash
+   export $(grep -v '^#' .env | xargs)
+   ```
+   (Windows PowerShell: `Get-Content .env | ForEach-Object { if ($_ -match '^([^#=]+)=(.*)$') { [Environment]::SetEnvironmentVariable($matches[1], $matches[2]) } }`)
+3. Chạy bằng Maven:
    ```bash
    ./mvnw spring-boot:run
    ```
@@ -32,9 +40,13 @@ DKStore là một ứng dụng quản lý cửa hàng trực tuyến (e-commerce
    ```powershell
    .\mvnw.cmd spring-boot:run
    ```
-3. Truy cập nội dung ứng dụng:
+4. Truy cập nội dung ứng dụng:
    - Backend + frontend admin: `http://localhost:10000/admin`
    - Frontend người dùng: `http://localhost:10000/`
+
+## Deploy lên server riêng
+Xem [DEPLOY.md](DEPLOY.md) — chạy bằng Docker Compose (app + PostgreSQL) và
+Cloudflare Tunnel cho HTTPS, không cần mở port trên router.
 
 ## Cấu trúc thư mục
 - `src/main/java`: mã nguồn Java Spring Boot (controllers, models, services, repository...)  
