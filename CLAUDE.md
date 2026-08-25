@@ -84,9 +84,14 @@ không dịch nửa chừng sang tiếng Anh.
 
 ## Quy ước code hiện tại (giữ nguyên khi sửa/thêm mới)
 - Controller dùng field injection `@Autowired` (không dùng constructor injection).
-  Method trả về String tên view hoặc `redirect:...`. Return path đôi khi có `/` ở đầu
-  (`"/admin/product/index"`), đôi khi không — cả hai đều chạy được với Thymeleaf,
-  không cần chuẩn hóa lại trừ khi được yêu cầu riêng.
+  Method trả về String tên view hoặc `redirect:...`. **Tên view KHÔNG được có `/` ở
+  đầu** (vd `"admin/product/index"`, không phải `"/admin/product/index"`) — dấu `/`
+  đầu làm Thymeleaf 3.1.2 (bản đang dùng) không resolve được template, ném
+  `TemplateInputException` → lỗi 500 khi request thật (đã phát hiện qua
+  `/admin/giohang` bị lỗi lúc deploy, rồi rà soát và sửa hết 13 chỗ tương tự trong
+  `UserController`/`ProductController`/`HoaDonController`/`GioHangController`). Nếu
+  thêm view mới, luôn viết không có `/` ở đầu. `redirect:/...` thì vẫn giữ nguyên `/`
+  vì đó là URL thật, không phải tên template.
 - Service: interface riêng + impl riêng (`XxxService` / `XxxServiceImple`). Method
   create/update/delete thường trả `Boolean`, bắt exception rồi `e.printStackTrace()`
   và trả `false` — không có custom exception hay `@ControllerAdvice` global handler.
@@ -112,6 +117,24 @@ không dịch nửa chừng sang tiếng Anh.
   — không tự chạy được `mvnw compile/test` hay `docker compose config` để verify, chỉ
   review code thủ công. Nếu môi trường sau này có các toolchain này thì nên chạy thật
   để verify thay vì chỉ đọc code.
+
+## Bug đã phát hiện & sửa khi deploy lên DB rỗng (2026-08-25/26)
+DB Render cũ đã tích luỹ dữ liệu nhiều năm nên các bug "empty state" dưới đây chưa
+từng lộ ra; khi chuyển sang Postgres tự host (rỗng hoàn toàn) mới hiện hình. Nếu sau
+này tạo thêm trang danh sách/phân trang mới, tránh lặp lại 2 lỗi này:
+- **Tên view Thymeleaf không được có `/` ở đầu** — xem mục quy ước code bên dưới.
+- **Phân trang kiểu `#numbers.sequence(1, totalPage)`**: khi `totalPage == 0` (bảng
+  rỗng), hàm này trả về `[1, 0]` (2 phần tử, không rỗng/không lỗi như tưởng), nên
+  luôn phải bọc `th:if="${totalPage != null && totalPage > 0}"` trên cùng thẻ
+  `<li>` (5/6 template đã có sẵn, `user/shop.html` từng thiếu → đã thêm). Đồng thời
+  tất cả service `getAll(pageNo)`/`search(keyword, pageNo)` dùng
+  `PageRequest.of(pageNo - 1, size)` đã đổi thành
+  `PageRequest.of(Math.max(pageNo - 1, 0), size)` để không crash
+  (`IllegalArgumentException: Page index must not be less than zero!`) nếu có
+  `pageNo=0` lọt qua (bấm link "0" sinh ra ở trên, hoặc gõ tay URL).
+- Chưa rà hết các trường hợp "empty state" khác ngoài phân trang (vd `findById(id)`
+  cho id không tồn tại ở vài chỗ vẫn dùng `.get()`/`orElseThrow` không bắt riêng) —
+  chưa gặp lỗi thật nên chưa sửa, cứ theo dõi log khi test thêm.
 
 ## ⚠️ Rủi ro đã biết (không tự sửa nếu task không yêu cầu, nhưng nên nhắc user)
 - Repo GitHub là **public** và **lịch sử git** vẫn còn commit cũ chứa plaintext mật

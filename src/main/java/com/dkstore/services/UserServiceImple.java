@@ -76,7 +76,7 @@ public class UserServiceImple implements UserService{
 	@Override
 	public Page<User> getAll(Integer pageNo) {
 		// TODO Auto-generated method stub
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		return this.userRepository.findAll(pageable);
 	}
 	@Override
@@ -88,7 +88,7 @@ public class UserServiceImple implements UserService{
 	public Page<User> search(String keyword, Integer pageNo) {
 		// TODO Auto-generated method stub
 		List<User> list = this.search(keyword);
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		Integer start = (int) pageable.getOffset();
 		Integer end = (int) ((pageable.getOffset() + pageable.getPageSize()) > list.size() ? list.size()
 				: pageable.getOffset() + pageable.getPageSize());

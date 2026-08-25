@@ -58,7 +58,7 @@ public class ProductController {
 		model.addAttribute("currentPage", pageNo);
 		model.addAttribute("pageSize", size);
 
-		return "/admin/product/index";
+		return "admin/product/index";
 	}
 
 	@GetMapping("/add-product")
@@ -67,7 +67,7 @@ public class ProductController {
 		model.addAttribute("product", product);
 		List<Brand> listCate = this.categoryService.getAll();
 		model.addAttribute("listCate", listCate);
-		return "/admin/product/add";
+		return "admin/product/add";
 	}
 
 	@PostMapping("/add-product")
@@ -215,7 +215,7 @@ public class ProductController {
 		if (isCreated) {
 			return "redirect:/admin/detail-product/" + sanPhamTonKho.getProduct().getId();
 		} else {
-			return "/admin/product/chitiet/add";
+			return "admin/product/chitiet/add";
 		}
 	}
 
@@ -225,7 +225,7 @@ public class ProductController {
 		model.addAttribute("tonkho", sanPhamTonKho);
 		Product product = sanPhamTonKho.getProduct();
 		model.addAttribute("product", product);
-		return "/admin/product/chitiet/edit";
+		return "admin/product/chitiet/edit";
 	}
 
 	@PostMapping("/edit-chitietsanpham")

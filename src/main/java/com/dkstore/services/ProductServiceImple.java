@@ -77,7 +77,7 @@ public class ProductServiceImple implements ProductService {
 	@Override
 	public Page<Product> getAll(Integer pageNo,Integer size) {
 		// TODO Auto-generated method stub
-		Pageable pageable = PageRequest.of(pageNo - 1, size);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), size);
 		return this.productRepository.findAll(pageable);
 	}
 
@@ -92,7 +92,7 @@ public class ProductServiceImple implements ProductService {
 	public Page<Product> search(String keyword, Integer pageNo,Integer size) {
 		// TODO Auto-generated method stub
 		List<Product> list = this.search(keyword);
-		Pageable pageable = PageRequest.of(pageNo - 1, size);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), size);
 		Integer start = (int) pageable.getOffset();
 		Integer end = (int) ((pageable.getOffset() + pageable.getPageSize()) > list.size() ? list.size()
 				: pageable.getOffset() + pageable.getPageSize());
@@ -141,7 +141,7 @@ public Page<Product> searchAndFilter(String keyword, List<String> brands, Intege
         brands = null;
     }
 
-    Pageable pageable = PageRequest.of(pageNo - 1, 9);
+    Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 9);
 
     if (brands == null) {
         return productRepository.findByKeywordNative(keyword, pageable);

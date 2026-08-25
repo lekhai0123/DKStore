@@ -160,7 +160,7 @@ public class UserController {
 		if (this.userService.delete(username)) {
 			return "redirect:/admin/user";
 		} else {
-			return "/admin/user";
+			return "admin/user/index";
 		}
 	}
     @PostMapping("/register")

@@ -70,7 +70,7 @@ public class GioHangController {
 		model.addAttribute("giohangs", listGiohang);
 		model.addAttribute("totalPage", listGiohang.getTotalPages());
 		model.addAttribute("currentPage", pageNo);
-		return "/admin/giohang/index";
+		return "admin/giohang/index";
 	}
 	@GetMapping("/{productId}/size")
 	public ResponseEntity<List<SanPhamTonKho>> getSizesByProductId(@PathVariable Integer productId) {
@@ -97,7 +97,7 @@ public class GioHangController {
 		model.addAttribute("listUsers", listUsers);
 		List<Product> listProducts = this.productService.getAll(); 
 		model.addAttribute("listProducts", listProducts);
-		return "/admin/giohang/add";
+		return "admin/giohang/add";
 	}
 	@PostMapping("/add-giohang")
 	public String save(HttpServletRequest request, @ModelAttribute GioHang giohang) {
@@ -213,7 +213,7 @@ public class GioHangController {
 	        this.sanPhamTonKhoService.updateTonKho(chiTietGioHang.getSize(), product,0,chiTietGioHang.getSoLuong());
 	        return "redirect:/admin/detail-giohang/" + chiTietGioHang.getGiohang().getId();
 	    } else {
-	        return "/admin/giohang/chitiet/add";
+	        return "admin/giohang/chitiet/add";
 	    }
 	}
 
@@ -227,7 +227,7 @@ public class GioHangController {
 	    model.addAttribute("giohang", gioHang);
 	    List<Product> productList = this.productService.getAll();
 	    model.addAttribute("product", productList);
-	    return "/admin/giohang/chitiet/edit";
+	    return "admin/giohang/chitiet/edit";
 	}
 	@PostMapping("/edit-chitietgiohang")
 	public String updatedetail(@ModelAttribute ChiTietGioHang chiTietGioHang) {

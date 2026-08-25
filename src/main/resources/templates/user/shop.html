@@ -185,7 +185,8 @@
 								th:href="@{/shop(pageNo=${productPage.number})}">«</a>
 							</li>
 							<!-- Page number links -->
-							<li th:each="i : ${#numbers.sequence(1, productPage.totalPages)}"
+							<li th:if="${productPage.totalPages != null && productPage.totalPages > 0}"
+								th:each="i : ${#numbers.sequence(1, productPage.totalPages)}"
 								th:classappend="${productPage.number == i - 1 ? 'active' : ''}"
 								class="page-item"><a class="page-link" th:text="${i}"
 								th:href="@{/shop(pageNo=${i})}"></a></li>

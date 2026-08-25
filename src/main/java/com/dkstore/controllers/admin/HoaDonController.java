@@ -54,7 +54,7 @@ public class HoaDonController {
 		model.addAttribute("hoadon", listHoadons);
 		model.addAttribute("totalPage", listHoadons.getTotalPages());
 		model.addAttribute("currentPage", pageNo);
-		return "/admin/hoadon/index";
+		return "admin/hoadon/index";
 	}
 	@GetMapping("/add-hoadon")
 	public String add(Model model) {
@@ -64,7 +64,7 @@ public class HoaDonController {
 		model.addAttribute("listUser", listUsers);
 		List<Product> listProducts = this.productService.getAll(); 
 		model.addAttribute("listProducts", listProducts);
-		return "/admin/hoadon/add";
+		return "admin/hoadon/add";
 	}
 	@PostMapping("/add-hoadon")
 	public String save(HttpServletRequest request, @ModelAttribute HoaDon hoaDon) {
@@ -174,7 +174,7 @@ public class HoaDonController {
             this.hoaDonService.update(hoaDon); 
 	        return "redirect:/admin/detail-hoadon/" + chiTietHoaDon.getHoadon().getId();
 	    } else {
-	        return "/admin/hoadon/chitiet/add";
+	        return "admin/hoadon/chitiet/add";
 	    }
 	}
 	@GetMapping("/edit-chitiethoadon/{id}")
@@ -188,7 +188,7 @@ public class HoaDonController {
 	    List<Product> productList = this.productService.getAll();
 	    model.addAttribute("product", productList);
 
-	    return "/admin/hoadon/chitiet/edit";
+	    return "admin/hoadon/chitiet/edit";
 	}
 	@PostMapping("/edit-chitiethoadon")
 	public String updatedetail(@ModelAttribute ChiTietHoaDon chiTietHoaDon) {

@@ -77,7 +77,7 @@ public class HoaDonServiceImple implements HoaDonService{
 	@Override
 	public Page<HoaDon> getAll(Integer pageNo) {
 		// TODO Auto-generated method stub
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		return this.hoaDonRepository.findAll(pageable);
 	}
 
@@ -91,7 +91,7 @@ public class HoaDonServiceImple implements HoaDonService{
 	public Page<HoaDon> search(String keyword, Integer pageNo) {
 		// TODO Auto-generated method stub
 		List<HoaDon> list = this.search(keyword);
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		Integer start = (int) pageable.getOffset();
 		Integer end = (int) ((pageable.getOffset() + pageable.getPageSize()) > list.size() ? list.size()
 				: pageable.getOffset() + pageable.getPageSize());

@@ -71,7 +71,7 @@ public class GioHangServiceImple implements GioHangService{
 	@Override
 	public Page<GioHang> getAll(Integer pageNo) {
 		// TODO Auto-generated method stub
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		return this.gioHangRepository.findAll(pageable);
 	}
 
@@ -85,7 +85,7 @@ public class GioHangServiceImple implements GioHangService{
 	public Page<GioHang> search(String keyword, Integer pageNo) {
 		// TODO Auto-generated method stub
 		List<GioHang> list = this.search(keyword);
-		Pageable pageable = PageRequest.of(pageNo - 1, 5);
+		Pageable pageable = PageRequest.of(Math.max(pageNo - 1, 0), 5);
 		Integer start = (int) pageable.getOffset();
 		Integer end = (int) ((pageable.getOffset() + pageable.getPageSize()) > list.size() ? list.size()
 				: pageable.getOffset() + pageable.getPageSize());
