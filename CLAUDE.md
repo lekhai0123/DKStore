@@ -49,12 +49,21 @@ Render; dự án đang chuyển sang tự host trên server riêng của chủ d
   `http://localhost:10000`) dùng để build link xác thực email/reset password, set qua
   `APP_BASE_URL`.
 - `docker-compose.yml`, `.env.example`, `.dockerignore`, `DEPLOY.md`: bộ file phục vụ
-  tự deploy — `docker-compose.yml` chạy 4 service: `db` (Postgres), `app` (build từ
+  tự deploy — `docker-compose.yml` chạy 5 service: `db` (Postgres), `app` (build từ
   `Dockerfile` có sẵn), `cloudflared` (Cloudflare Tunnel, không cần mở port trên
   router/firewall), `webhook` (tuỳ chọn — nhận webhook GitHub push, tự `git pull` +
   rebuild `app`, code ở `deploy/webhook/app.py`, cần mount Docker socket nên có quyền
-  tương đương root trên server, bảo vệ bằng HMAC secret `WEBHOOK_SECRET`). `.env`
-  (thật, không commit) tạo từ `.env.example` trên server.
+  tương đương root trên server, bảo vệ bằng HMAC secret `WEBHOOK_SECRET`), `healthmon`
+  (tuỳ chọn — ping `app:10000/ping` nội bộ mỗi phút, gửi mail khi app crash/hồi phục,
+  code ở `deploy/healthmon/app.py`, không cần Docker socket). `.env` (thật, không
+  commit) tạo từ `.env.example` trên server.
+- `.github/workflows/uptime-check.yml` + `.github/scripts/uptime_check.py` (tuỳ chọn):
+  giám sát uptime **từ bên ngoài server** qua GitHub Actions (cron mỗi 5 phút, ping
+  domain public), bắt được cả trường hợp server tắt hẳn mà `healthmon` không bắt được
+  (vì `healthmon` nằm trên chính server, server tắt thì nó cũng tắt theo). Lưu trạng
+  thái ở nhánh git riêng `uptime-state` (không phải `master`, để tránh trigger nhầm
+  `webhook` auto-deploy). Cần set 3 GitHub Actions secret: `MAIL_USERNAME`,
+  `MAIL_PASSWORD`, `ALERT_EMAIL_TO`.
 
 ## Thuật ngữ tiếng Việt trong domain model
 - `GioHang` = giỏ hàng (Cart), `ChiTietGioHang` = dòng chi tiết giỏ hàng.

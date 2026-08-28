@@ -141,6 +141,63 @@ Các bước bật:
    Nếu không thấy gì, vào tab **Recent Deliveries** của webhook trên GitHub xem response
    code (401 = sai secret, không thấy request nào = Cloudflare route chưa đúng).
 
+## 8. (Tuỳ chọn) Giám sát sức khoẻ + cảnh báo email
+
+Có 2 lớp giám sát độc lập, không phụ thuộc dịch vụ ngoài kiểu UptimeRobot — chỉ dùng
+lại chính tài khoản Gmail đã cấu hình sẵn để gửi mail:
+
+- **`healthmon`** (container mới trong `docker-compose.yml`, chạy ngay trên server):
+  ping `http://app:10000/ping` mỗi 60 giây. Bắt được **app bị crash/treo trong khi
+  server vẫn sống** — gửi mail khi app rớt và khi app hoạt động lại. Không cần tự viết
+  lệnh restart vì `restart: unless-stopped` đã có sẵn cho container `app`.
+  - **Giới hạn:** không bắt được trường hợp cả server bị tắt/mất mạng, vì lúc đó chính
+    `healthmon` cũng "chết" theo, không gửi mail được.
+- **GitHub Actions** (`.github/workflows/uptime-check.yml`, chạy trên máy GitHub, code
+  tự viết 100%): ping domain public `https://dkstore.ltk.id.vn/ping` mỗi 5 phút (chu kỳ
+  ngắn nhất GitHub Actions schedule hỗ trợ). Bắt được **cả server tắt hẳn/mất mạng**, vì
+  chạy hoàn toàn độc lập, không nằm trên server của bạn.
+
+### Bật `healthmon` (chạy trên server)
+
+Chỉ cần điền `ALERT_EMAIL_TO` trong `.env` (email nhận cảnh báo), rồi:
+```bash
+docker compose up -d --build
+docker compose logs -f healthmon   # xem "watching http://app:10000/ping every 60s"
+```
+Không cần thêm route Cloudflare gì — service này chỉ gọi nội bộ trong Docker network,
+không cần ai từ ngoài gọi vào nó.
+
+### Bật GitHub Actions uptime check
+
+1. Tạo nhánh trạng thái riêng (chạy **1 lần duy nhất**, trên máy có sẵn code — làm ở
+   máy bạn hoặc trên server đều được, miễn có `git`):
+   ```bash
+   git checkout --orphan uptime-state
+   git rm -rf .
+   echo '{"status":"up"}' > status.json
+   git add status.json
+   git commit -m "init uptime state"
+   git push origin uptime-state
+   git checkout master
+   ```
+2. Trên GitHub: vào repo → **Settings → Secrets and variables → Actions → New repository
+   secret**, tạo 3 secret:
+   - `MAIL_USERNAME`: email Gmail đang dùng để gửi mail (giống `MAIL_USERNAME` trong `.env`)
+   - `MAIL_PASSWORD`: mật khẩu ứng dụng Gmail (giống `MAIL_PASSWORD` trong `.env`)
+   - `ALERT_EMAIL_TO`: email nhận cảnh báo
+3. Vào **Settings → Actions → General → Workflow permissions**, chọn **"Read and write
+   permissions"** rồi Save — bắt buộc để workflow tự commit cập nhật trạng thái vào
+   nhánh `uptime-state` được.
+4. Vào tab **Actions** trên GitHub, chọn workflow "Uptime Check" → **Run workflow** để
+   test thử ngay (không cần đợi 5 phút). Nếu server đang sống, log sẽ ghi
+   `status unchanged: up`, không gửi mail (đúng vì chưa có gì thay đổi) — muốn test gửi
+   mail thật thì tạm sửa `status.json` trên nhánh `uptime-state` thành
+   `{"status":"down"}` rồi chạy lại, sẽ thấy mail "đã hoạt động trở lại" gửi tới.
+
+**Giới hạn cần biết:** GitHub Actions schedule không đảm bảo chạy đúng chính xác từng
+5 phút (có thể trễ vài phút lúc GitHub tải cao) — chấp nhận được cho việc cảnh báo,
+không phù hợp nếu cần độ chính xác giây.
+
 ## Lưu ý bảo mật quan trọng
 
 - Repo GitHub này đang **public** và trước đây từng commit thẳng mật khẩu DB Render,

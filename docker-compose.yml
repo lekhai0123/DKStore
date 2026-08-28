@@ -44,5 +44,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - .:/repo
 
+  healthmon:
+    build: ./deploy/healthmon
+    restart: unless-stopped
+    environment:
+      CHECK_URL: http://app:10000/ping
+      CHECK_INTERVAL_SECONDS: 60
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO}
+    depends_on:
+      - app
+
 volumes:
   pgdata:
