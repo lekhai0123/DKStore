@@ -28,7 +28,8 @@ def check_up() -> bool:
 
 def load_previous_status() -> str:
     try:
-        with open(STATE_FILE, "r", encoding="utf-8") as f:
+        # utf-8-sig: bo qua BOM neu file duoc tao/sua tren Windows (vd PowerShell echo)
+        with open(STATE_FILE, "r", encoding="utf-8-sig") as f:
             return json.load(f).get("status", "up")
     except (FileNotFoundError, json.JSONDecodeError):
         return "up"
@@ -47,11 +48,16 @@ def send_mail(subject: str, body: str) -> None:
     msg["Subject"] = subject
     msg["From"] = MAIL_USERNAME
     msg["To"] = ALERT_EMAIL_TO
-    context = ssl.create_default_context()
-    with smtplib.SMTP(MAIL_HOST, MAIL_PORT, timeout=20) as server:
-        server.starttls(context=context)
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.sendmail(MAIL_USERNAME, [ALERT_EMAIL_TO], msg.as_string())
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP(MAIL_HOST, MAIL_PORT, timeout=20) as server:
+            server.starttls(context=context)
+            server.login(MAIL_USERNAME, MAIL_PASSWORD)
+            server.sendmail(MAIL_USERNAME, [ALERT_EMAIL_TO], msg.as_string())
+        print(f"alert email sent: {subject}")
+    except Exception as e:
+        # Khong de loi gui mail lam fail ca workflow (state van phai duoc luu binh thuong)
+        print(f"failed to send email: {e}")
 
 
 def main():
