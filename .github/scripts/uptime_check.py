@@ -27,11 +27,20 @@ def check_up() -> bool:
 
 
 def load_previous_status() -> str:
+    # File nay hay bi ghi de bang cac editor/shell tren Windows (PowerShell mac dinh
+    # UTF-16, Notepad hay them BOM...) nen bat rong moi loi doc/parse/encoding, coi
+    # nhu "chua ro trang thai" thay vi lam crash ca workflow. save_status() ben duoi
+    # luon ghi lai dung UTF-8 khong BOM nen file se tu "lanh" o lan chay ke tiep.
     try:
-        # utf-8-sig: bo qua BOM neu file duoc tao/sua tren Windows (vd PowerShell echo)
-        with open(STATE_FILE, "r", encoding="utf-8-sig") as f:
-            return json.load(f).get("status", "up")
-    except (FileNotFoundError, json.JSONDecodeError):
+        with open(STATE_FILE, "rb") as f:
+            raw = f.read()
+        if raw[:2] in (b"\xff\xfe", b"\xfe\xff"):
+            text = raw.decode("utf-16")
+        else:
+            text = raw.decode("utf-8-sig")
+        return json.loads(text).get("status", "up")
+    except Exception as e:
+        print(f"could not read previous status ({e}), assuming 'up'")
         return "up"
 
 
