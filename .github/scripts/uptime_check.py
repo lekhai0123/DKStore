@@ -5,6 +5,7 @@ import ssl
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 CHECK_URL = os.environ.get("CHECK_URL", "")
@@ -18,6 +19,8 @@ ALERT_EMAIL_TO = os.environ.get("ALERT_EMAIL_TO", "")
 # - phong truong hop lan gui mail dau tien (luc vua chuyen sang down) bi loi/that lac,
 # van co co hoi gui lai o lan nhac tiep theo thay vi im lang mai mai.
 REMINDER_INTERVAL_MINUTES = int(os.environ.get("REMINDER_INTERVAL_MINUTES", "30"))
+
+SOURCE_LABEL = "GitHub Actions (kiem tra tu ben ngoai, doc lap voi server)"
 
 
 def check_up() -> bool:
@@ -66,21 +69,69 @@ def save_state(status: str, down_since, last_alert_at) -> None:
         )
 
 
-def send_mail(subject: str, body: str) -> bool:
+def render_html(is_down: bool, title: str, rows: list, note: str) -> str:
+    color = "#dc2626" if is_down else "#16a34a"
+    icon = "\U0001F534" if is_down else "\U0001F7E2"  # red/green circle
+    rows_html = "".join(
+        f'<tr>'
+        f'<td style="padding:10px 12px;color:#6b7280;font-size:13px;white-space:nowrap;'
+        f'border-bottom:1px solid #f3f4f6;">{key}</td>'
+        f'<td style="padding:10px 12px;color:#111827;font-size:14px;font-weight:600;'
+        f'border-bottom:1px solid #f3f4f6;">{value}</td>'
+        f'</tr>'
+        for key, value in rows
+    )
+    return f"""\
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:{color};padding:20px 24px;">
+        <span style="font-size:18px;font-weight:700;color:#ffffff;">{icon} {title}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px 4px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+          {rows_html}
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 24px;border-top:1px solid #e5e7eb;">
+        <span style="font-size:12px;color:#9ca3af;line-height:1.5;">{note}</span>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+
+def render_text(title: str, rows: list, note: str) -> str:
+    lines = [title, ""]
+    lines += [f"{key}: {value}" for key, value in rows]
+    lines += ["", note]
+    return "\n".join(lines)
+
+
+def send_alert(is_down: bool, title: str, rows: list, note: str) -> bool:
     if not (MAIL_USERNAME and MAIL_PASSWORD and ALERT_EMAIL_TO):
         print("mail not configured (secrets missing), skip sending")
         return False
-    msg = MIMEText(body, "plain", "utf-8")
-    msg["Subject"] = subject
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = title
     msg["From"] = MAIL_USERNAME
     msg["To"] = ALERT_EMAIL_TO
+    msg.attach(MIMEText(render_text(title, rows, note), "plain", "utf-8"))
+    msg.attach(MIMEText(render_html(is_down, title, rows, note), "html", "utf-8"))
     try:
         context = ssl.create_default_context()
         with smtplib.SMTP(MAIL_HOST, MAIL_PORT, timeout=20) as server:
             server.starttls(context=context)
             server.login(MAIL_USERNAME, MAIL_PASSWORD)
             server.sendmail(MAIL_USERNAME, [ALERT_EMAIL_TO], msg.as_string())
-        print(f"alert email sent: {subject}")
+        print(f"alert email sent: {title}")
         return True
     except Exception as e:
         # Khong de loi gui mail lam fail ca workflow (state van phai duoc luu binh thuong)
@@ -105,11 +156,17 @@ def main():
     if is_up:
         if previous_status == "down":
             print("recovered")
-            since_msg = f" (bi down tu {down_since})" if down_since else ""
-            send_mail(
-                "[DKStore] Server da hoat dong tro lai",
-                f"Domain {CHECK_URL} da phan hoi binh thuong tro lai luc {now_str}{since_msg} "
-                f"(kiem tra tu GitHub Actions).",
+            send_alert(
+                False,
+                "DKStore - Server da hoat dong tro lai",
+                [
+                    ("Trang thai", "Da phan hoi binh thuong"),
+                    ("Domain", CHECK_URL),
+                    ("Down tu", down_since or "-"),
+                    ("Phuc hoi luc", now_str),
+                    ("Nguon kiem tra", SOURCE_LABEL),
+                ],
+                "Khong can lam gi them.",
             )
         else:
             print("status unchanged: up")
@@ -135,12 +192,17 @@ def main():
             print(f"still down (since {down_since}), {'sending reminder' if should_alert else 'skip, too soon'}")
 
         if should_alert:
-            since_msg = f" tu {down_since}" if down_since else ""
-            sent = send_mail(
-                "[DKStore] CANH BAO: server khong phan hoi",
-                f"Domain {CHECK_URL} khong phan hoi{since_msg} (kiem tra luc {now_str} tu GitHub Actions, "
-                f"doc lap voi server). Kiem tra server/mang/dien ngay. Se nhac lai moi "
-                f"{REMINDER_INTERVAL_MINUTES} phut neu van con down.",
+            sent = send_alert(
+                True,
+                "DKStore - CANH BAO: server khong phan hoi",
+                [
+                    ("Trang thai", "Khong phan hoi"),
+                    ("Domain", CHECK_URL),
+                    ("Down tu", down_since or "-"),
+                    ("Kiem tra luc", now_str),
+                    ("Nguon kiem tra", SOURCE_LABEL),
+                ],
+                f"Se nhac lai moi {REMINDER_INTERVAL_MINUTES} phut neu van con down.",
             )
             if sent:
                 last_alert_at = now_dt.isoformat()

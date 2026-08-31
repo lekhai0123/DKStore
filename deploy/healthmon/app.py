@@ -5,6 +5,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 CHECK_URL = os.environ.get("CHECK_URL", "http://app:10000/ping")
@@ -21,6 +22,8 @@ MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")
 MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
 ALERT_EMAIL_TO = os.environ.get("ALERT_EMAIL_TO", "")
 
+SOURCE_LABEL = "Giam sat noi bo tren server (healthmon)"
+
 
 def check_up() -> bool:
     try:
@@ -32,21 +35,69 @@ def check_up() -> bool:
         return False
 
 
-def send_mail(subject: str, body: str) -> bool:
+def render_html(is_down: bool, title: str, rows: list, note: str) -> str:
+    color = "#dc2626" if is_down else "#16a34a"
+    icon = "\U0001F534" if is_down else "\U0001F7E2"
+    rows_html = "".join(
+        f'<tr>'
+        f'<td style="padding:10px 12px;color:#6b7280;font-size:13px;white-space:nowrap;'
+        f'border-bottom:1px solid #f3f4f6;">{key}</td>'
+        f'<td style="padding:10px 12px;color:#111827;font-size:14px;font-weight:600;'
+        f'border-bottom:1px solid #f3f4f6;">{value}</td>'
+        f'</tr>'
+        for key, value in rows
+    )
+    return f"""\
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:{color};padding:20px 24px;">
+        <span style="font-size:18px;font-weight:700;color:#ffffff;">{icon} {title}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px 4px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+          {rows_html}
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 24px;border-top:1px solid #e5e7eb;">
+        <span style="font-size:12px;color:#9ca3af;line-height:1.5;">{note}</span>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+
+def render_text(title: str, rows: list, note: str) -> str:
+    lines = [title, ""]
+    lines += [f"{key}: {value}" for key, value in rows]
+    lines += ["", note]
+    return "\n".join(lines)
+
+
+def send_alert(is_down: bool, title: str, rows: list, note: str) -> bool:
     if not (MAIL_USERNAME and MAIL_PASSWORD and ALERT_EMAIL_TO):
         print("[healthmon] mail not configured (MAIL_USERNAME/MAIL_PASSWORD/ALERT_EMAIL_TO), skip sending", flush=True)
         return False
-    msg = MIMEText(body, "plain", "utf-8")
-    msg["Subject"] = subject
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = title
     msg["From"] = MAIL_USERNAME
     msg["To"] = ALERT_EMAIL_TO
+    msg.attach(MIMEText(render_text(title, rows, note), "plain", "utf-8"))
+    msg.attach(MIMEText(render_html(is_down, title, rows, note), "html", "utf-8"))
     try:
         context = ssl.create_default_context()
         with smtplib.SMTP(MAIL_HOST, MAIL_PORT, timeout=20) as server:
             server.starttls(context=context)
             server.login(MAIL_USERNAME, MAIL_PASSWORD)
             server.sendmail(MAIL_USERNAME, [ALERT_EMAIL_TO], msg.as_string())
-        print(f"[healthmon] alert email sent: {subject}", flush=True)
+        print(f"[healthmon] alert email sent: {title}", flush=True)
         return True
     except Exception as e:
         print(f"[healthmon] failed to send email: {e}", flush=True)
@@ -67,10 +118,17 @@ def main():
         if is_up:
             if last_status is False:
                 print("[healthmon] app RECOVERED", flush=True)
-                since_msg = f" (bi down tu {down_since})" if down_since else ""
-                send_mail(
-                    "[DKStore] App da hoat dong tro lai",
-                    f"App tai {CHECK_URL} da phan hoi binh thuong tro lai luc {now_wall}{since_msg}.",
+                send_alert(
+                    False,
+                    "DKStore - App da hoat dong tro lai",
+                    [
+                        ("Trang thai", "Da phan hoi binh thuong"),
+                        ("Endpoint", CHECK_URL),
+                        ("Down tu", down_since or "-"),
+                        ("Phuc hoi luc", now_wall),
+                        ("Nguon kiem tra", SOURCE_LABEL),
+                    ],
+                    "Khong can lam gi them.",
                 )
             else:
                 print("[healthmon] status: up", flush=True)
@@ -92,12 +150,17 @@ def main():
                 )
 
             if should_alert:
-                since_msg = f" tu {down_since}" if down_since else ""
-                sent = send_mail(
-                    "[DKStore] CANH BAO: app khong phan hoi",
-                    f"App khong phan hoi tai {CHECK_URL}{since_msg} (kiem tra luc {now_wall}).\n"
-                    f"Server van dang song (email nay duoc gui tu chinh server), nhieu kha nang app "
-                    f"bi crash/treo. Docker se tu dong thu restart container. Se nhac lai moi "
+                sent = send_alert(
+                    True,
+                    "DKStore - CANH BAO: app khong phan hoi",
+                    [
+                        ("Trang thai", "Khong phan hoi (server van song)"),
+                        ("Endpoint", CHECK_URL),
+                        ("Down tu", down_since or "-"),
+                        ("Kiem tra luc", now_wall),
+                        ("Nguon kiem tra", SOURCE_LABEL),
+                    ],
+                    f"Docker se tu dong thu restart container app. Se nhac lai moi "
                     f"{REMINDER_INTERVAL_SECONDS // 60} phut neu van con down.",
                 )
                 if sent:
