@@ -194,9 +194,44 @@ không cần ai từ ngoài gọi vào nó.
    mail thật thì tạm sửa `status.json` trên nhánh `uptime-state` thành
    `{"status":"down"}` rồi chạy lại, sẽ thấy mail "đã hoạt động trở lại" gửi tới.
 
-**Giới hạn cần biết:** GitHub Actions schedule không đảm bảo chạy đúng chính xác từng
-5 phút (có thể trễ vài phút lúc GitHub tải cao) — chấp nhận được cho việc cảnh báo,
-không phù hợp nếu cần độ chính xác giây.
+**Giới hạn thật đã gặp:** lịch `schedule` mỗi 5 phút của GitHub Actions **không đáng
+tin cậy** — thực tế quan sát được các lần chạy tự động cách nhau **2-6.5 tiếng** thay
+vì 5 phút (GitHub tự giãn lịch, đặc biệt với repo public/free), nên dễ bỏ lỡ sự cố
+ngắn hạn. Không sửa được bằng code vì đây là hành vi phía hạ tầng GitHub.
+
+### 8b. Khắc phục lịch chạy không đều — dùng cron ngoài chỉ để "bấm nút"
+
+Thay vì tin vào lịch `schedule` nội bộ của Actions, dùng 1 dịch vụ cron ngoài miễn phí
+(vd [cron-job.org](https://cron-job.org)) gọi thẳng vào GitHub API để kích hoạt
+workflow đúng mỗi 5 phút — dịch vụ ngoài chỉ đóng vai trò "đến giờ thì bấm nút", toàn
+bộ logic check + gửi mail vẫn 100% là code bạn tự viết, không phải "giám sát ngoài"
+theo nghĩa hộp đen.
+
+1. Tạo **fine-grained personal access token** (KHÔNG dùng classic token có quyền quá
+   rộng): GitHub → avatar góc phải → **Settings → Developer settings → Personal access
+   tokens → Fine-grained tokens → Generate new token**.
+   - Repository access: chọn **Only select repositories** → `DKStore` (chỉ đúng repo
+     này, không cấp quyền các repo khác).
+   - Permissions: chỉ tick **Actions: Read and write** (không tick gì thêm) — token bị
+     lộ cũng chỉ có thể trigger workflow, không push được code hay đọc secret.
+   - Generate, copy token lại (chỉ hiện 1 lần).
+2. Đăng ký tài khoản free trên cron-job.org (hoặc dịch vụ tương đương), tạo 1 cronjob:
+   - URL: `https://api.github.com/repos/lekhai0123/DKStore/actions/workflows/uptime-check.yml/dispatches`
+   - Method: `POST`
+   - Headers:
+     ```
+     Authorization: Bearer <token vừa tạo>
+     Accept: application/vnd.github+json
+     Content-Type: application/json
+     ```
+   - Body: `{"ref":"master"}`
+   - Lịch chạy: mỗi 5 phút.
+3. Test: lưu cronjob xong bấm "Run now" (hoặc tương đương) trên cron-job.org, rồi vào
+   tab Actions của repo xem có run mới xuất hiện đúng lúc đó không.
+
+**Lưu ý bảo mật riêng cho token này:** chỉ dán token vào ô cấu hình của cron-job.org,
+không commit vào bất kỳ file nào trong repo. Nếu nghi ngờ lộ, vào lại Settings →
+Developer settings → Personal access tokens để revoke ngay.
 
 ## Lưu ý bảo mật quan trọng
 
